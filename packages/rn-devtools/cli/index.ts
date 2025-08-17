@@ -15,7 +15,7 @@ async function startServer() {
     base: "/",
     server: {
       host: true,
-      port: 3000,
+      port: 35515,
     },
   });
   await server.listen();
@@ -36,14 +36,14 @@ async function startServer() {
 
   socketHandle({ io });
 
-  await open("http://localhost:3000", {
+  await open("http://localhost:35515", {
     newInstance: true,
     app: { name: "google chrome", arguments: ["--new-window"] },
   });
-  console.log("Server is running at http://localhost:3000");
+  console.log("[rn-devtools] Server is running at http://localhost:35515");
 }
 
 startServer().catch((error) => {
-  console.error("Error starting server:", error);
+  console.error("[rn-devtools] Error starting server:", error);
   process.exit(1);
 });

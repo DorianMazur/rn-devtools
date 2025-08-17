@@ -341,7 +341,7 @@ export default function App() {
   );
 
   useReactNativeDevtools({
-    socketURL: "http://10.0.2.2:3000",
+    socketURL: "http://10.0.2.2:35515",
     deviceName: Platform.OS || "web",
     platform: Platform.OS || "web",
     deviceId: Platform.OS || "web",

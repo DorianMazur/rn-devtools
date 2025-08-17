@@ -5,7 +5,7 @@ import { User } from "virtual:rn-devtools-plugins";
 let socket = null as Socket | null;
 
 export function useConnectedUsers() {
-  const socketURL = "http://localhost:3000";
+  const socketURL = "http://localhost:35515";
   const [isDashboardConnected, setIsDashboardConnected] = useState(
     !!socket?.connected
   );

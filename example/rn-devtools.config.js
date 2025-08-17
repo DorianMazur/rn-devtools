@@ -1,4 +1,7 @@
-const config = {
-  plugins: ["@rn-devtools/react-navigation-plugin", "@rn-devtools/react-query-plugin"],
+/** @type {import('@rn-devtools/rn-devtools/config').DevtoolsConfig} */
+module.exports = {
+  plugins: [
+    "@rn-devtools/react-query-plugin",
+    "@rn-devtools/react-navigation-plugin",
+  ],
 };
-export default config;

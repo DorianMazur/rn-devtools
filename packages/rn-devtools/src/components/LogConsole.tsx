@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLogStore, LogEntry, LogLevel } from "../utils/logStore";
 import { PlatformIcon } from "../utils/platformUtils";
-import { User } from "../external-dash/types/User";
+import { User } from "virtual:rn-devtools-plugins";
 
 // Get log level color
 const getLogLevelColor = (level: LogLevel): string => {

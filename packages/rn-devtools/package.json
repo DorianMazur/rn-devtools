@@ -3,21 +3,18 @@
   "version": "0.0.1",
   "description": "React Native DevTools",
   "type": "module",
-  "main": "./nativeDist/index.js",
-  "types": "./nativeDist/index.d.ts",
+  "main": "./dist/native/index.js",
+  "types": "./dist/native/index.d.ts",
   "exports": {
     ".": {
-      "import": "./nativeDist/index.js",
-      "types": "./nativeDist/index.d.ts"
+      "import": "./dist/native/index.js",
+      "types": "./dist/native/index.d.ts"
     }
   },
   "scripts": {
     "build:web": "vite build",
-    "build:cli": "tsup cli/index.ts --format esm --platform=node",
-    "build:native": "tsup ./native/index.ts --format esm --dts --clean --external socket.io-client --out-dir nativeDist",
-    "run:cli": "node ./bin/index.js",
-    "run:web": "vite preview",
-    "dev:web": "vite dev"
+    "build:cli": "tsup --config=./tsup.cli.config.ts",
+    "build:native": "tsup --config=./tsup.native.config.ts"
   },
   "bin": "./bin/index.js",
   "dependencies": {
@@ -38,6 +35,7 @@
     "@react-router/dev": "^7.7.1",
     "@tailwindcss/vite": "^4.1.4",
     "tailwindcss": "^4.1.4",
+    "tsup": "^8.5.0",
     "vite": "^6.3.3",
     "vite-tsconfig-paths": "^5.1.4"
   }

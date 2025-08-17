@@ -1,7 +1,18 @@
 import type { Server, Socket } from "socket.io";
 
-type Hello = { role: "device" | "dashboard"; deviceId?: string; deviceName?: string; platform?: string };
-type PluginMsg = { pluginId: string; deviceId?: string; event: string; payload?: any; timestamp?: number };
+type Hello = {
+  role: "device" | "dashboard";
+  deviceId?: string;
+  deviceName?: string;
+  platform?: string;
+};
+type PluginMsg = {
+  pluginId: string;
+  deviceId?: string;
+  event: string;
+  payload?: any;
+  timestamp?: number;
+};
 
 type DeviceInfo = {
   deviceId: string;
@@ -13,7 +24,10 @@ type DeviceInfo = {
 };
 
 function sanitizePluginId(raw: string) {
-  return (raw || "").toLowerCase().replace(/[^a-z0-9._-]/g, "").slice(0, 64);
+  return (raw || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]/g, "")
+    .slice(0, 64);
 }
 function sanitizeEvent(raw: string) {
   return String(raw || "").slice(0, 128);
@@ -32,14 +46,26 @@ export default function socketHandle({ io }: { io: Server }) {
       isConnected: d.sockets.size > 0,
       lastSeen: d.lastSeen,
     }));
-    console.log(`[rn-devtools] Devices:`, list);
     io.to("dashboards").emit("all-devices-update", list);
   };
 
-  const upsertDevice = (deviceId: string, socketId: string, name?: string, platform?: string, meta?: any) => {
+  const upsertDevice = (
+    deviceId: string,
+    socketId: string,
+    name?: string,
+    platform?: string,
+    meta?: any
+  ) => {
     let d = devices.get(deviceId);
     if (!d) {
-      d = { deviceId, name, platform, sockets: new Set(), lastSeen: Date.now(), meta };
+      d = {
+        deviceId,
+        name,
+        platform,
+        sockets: new Set(),
+        lastSeen: Date.now(),
+        meta,
+      };
       devices.set(deviceId, d);
     }
     if (name) d.name = name;
@@ -78,23 +104,28 @@ export default function socketHandle({ io }: { io: Server }) {
       broadcastDevices();
     }
 
-    socket.on("devtools:hello", ({ role, deviceId, deviceName, platform }: Hello) => {
-      if (role === "dashboard") {
-        dashboards.add(socket.id);
-        socket.join("dashboards");
-        broadcastDevices();
-      } else if (role === "device" && deviceId) {
-        upsertDevice(deviceId, socket.id, deviceName, platform);
-        broadcastDevices();
+    socket.on(
+      "devtools:hello",
+      ({ role, deviceId, deviceName, platform }: Hello) => {
+        if (role === "dashboard") {
+          dashboards.add(socket.id);
+          socket.join("dashboards");
+          broadcastDevices();
+        } else if (role === "device" && deviceId) {
+          upsertDevice(deviceId, socket.id, deviceName, platform);
+          broadcastDevices();
+        }
       }
-    });
+    );
 
     // Device -> Dashboards
     socket.on("plugin:up", (msg: PluginMsg) => {
       const pluginId = sanitizePluginId(msg?.pluginId || "");
       const event = sanitizeEvent(msg?.event || "");
       // derive deviceId from the room membership if not provided
-      const roomDev = Array.from(socket.rooms).find((r) => r.startsWith("device:"));
+      const roomDev = Array.from(socket.rooms).find((r) =>
+        r.startsWith("device:")
+      );
       const derivedId = roomDev?.slice("device:".length);
       const deviceId = msg?.deviceId || derivedId;
 

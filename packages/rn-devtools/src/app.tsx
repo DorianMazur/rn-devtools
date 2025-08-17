@@ -90,24 +90,7 @@ export const Dashboard = () => {
       <div className="flex flex-col w-full h-screen overflow-hidden bg-[#0A0A0C] text-white">
         <header className="w-full px-5 py-4 border-b border-[#2D2D2F]/50 flex flex-col gap-3 flex-shrink-0 bg-[#0A0A0C]/95 sticky top-0 z-20 shadow-[0_0.5rem_1rem_rgba(0,0,0,0.2)]">
           <div className="w-full flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full  ${
-                  isDashboardConnected
-                    ? "bg-gradient-to-r from-green-500/10 to-green-500/5 border border-green-500/20 shadow-[0_0_10px_rgba(74,222,128,0.1)]"
-                    : "bg-gradient-to-r from-red-500/10 to-red-500/5 border border-red-500/20 shadow-[0_0_10px_rgba(248,113,113,0.1)]"
-                }`}
-              >
-                <div
-                  className={`w-2 h-2 rounded-full ${isDashboardConnected ? "bg-green-400" : "bg-red-400"}`}
-                />
-                <span
-                  className={`text-xs font-medium tracking-wide ${isDashboardConnected ? "text-green-300" : "text-red-300"}`}
-                >
-                  {isDashboardConnected ? "Connected" : "Disconnected"}
-                </span>
-              </div>
-            </div>
+            <div className="flex items-center gap-4" />
 
             <div className="flex items-center gap-5">
               <div className="flex-shrink-0">

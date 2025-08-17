@@ -1,6 +1,7 @@
-# RN-Devtools
+# React Native Devtools
 
-Sleek, extensible React Native devtools.
+Sleek, extensible devtools for React Native.
+Add tabs as npm plugins!
 
 ![alt text](https://github.com/DorianMazur/rn-devtools/raw/main/react-query-plugin.gif "React Query Plugin")
 
@@ -31,10 +32,13 @@ yarn add @rn-devtools/react-query-plugin @rn-devtools/react-navigation-plugin
 Create rn-devtools.config.js in your RN app:
 
 ```js
-const config = {
-  plugins: ["@rn-devtools/react-navigation-plugin", "@rn-devtools/react-query-plugin"],
+/** @type {import('@rn-devtools/rn-devtools/config').DevtoolsConfig} */
+module.exports = {
+  plugins: [
+    "@rn-devtools/react-query-plugin",
+    "@rn-devtools/react-navigation-plugin",
+  ],
 };
-export default config;
 ```
 
 3. Start the DevTools
@@ -54,7 +58,7 @@ import { useReactNavigationDevtools } from "@rn-devtools/react-navigation-plugin
 function App() {
   // your app setup…
   useReactNativeDevtools({
-    socketURL: "http://10.0.2.2:3000",
+    socketURL: "http://10.0.2.2:35515",
     deviceName: Platform.OS,
     platform: Platform.OS,
     deviceId: Platform.OS, // make this persistent per device in real apps
@@ -68,7 +72,7 @@ function App() {
 }
 ```
 
-DevTools opens on http://localhost:3000
+DevTools opens on http://localhost:35515
 
 
 ## License
