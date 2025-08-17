@@ -1,0 +1,46 @@
+{
+  "name": "@rn-devtools/react-navigation-plugin",
+  "author": "Dorian Mazur",
+  "license": "MIT",
+  "version": "0.0.1",
+  "description": "React Navigation tab for rn-devtools",
+  "type": "module",
+  "main": "dist/web.js",
+  "types": "dist/web.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/web.js",
+      "types": "./dist/web.d.ts"
+    },
+    "./web": {
+      "import": "./dist/web.js",
+      "types": "./dist/web.d.ts"
+    },
+    "./native": {
+      "import": "./dist/native.js",
+      "types": "./dist/native.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/web.tsx src/native.ts --format esm --dts --clean --external react --external react-dom --external socket.io-client"
+  },
+  "dependencies": {
+    "@react-navigation/devtools": "^7.0.38",
+    "@react-navigation/native": "^7.1.17",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "@rn-devtools/plugin-sdk": "workspace:*",
+    "tsup": "^8.5.0"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "socket.io-client": "4"
+  }
+}
