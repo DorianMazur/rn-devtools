@@ -4,7 +4,7 @@ Sleek, extensible React Native devtools.
 
 ![alt text](https://github.com/DorianMazur/rn-devtools/raw/main/react-query-plugin.gif "React Query Plugin")
 
-![alt text](https://github.com/DorianMazur/rn-devtools/raw/main/react-query-plugin.gif "Navigation Plugin")
+![alt text](https://github.com/DorianMazur/rn-devtools/raw/main/navigation-plugin.gif "Navigation Plugin")
 
 ## ✨ Highlights
 
