@@ -9,10 +9,11 @@ Sleek, extensible React Native devtools.
 ## ✨ Highlights
 
 - Plugin system: add tabs via simple npm packages.
+- Real-time monitoring (Socket.IO integration for reliable communication)
 - Zero server edits: plugins talk over a shared plugin:up / plugin:down bus.
 - One hook to wire it all: useReactNativeDevtools() creates one socket, fans out to plugin hooks.
-- Monorepo-friendly: resolves plugins from your app/workspace (Node 20+).
 - Always listening: plugins keep syncing even when their tab isn’t active.
+- Zero-config production safety - automatically disabled in production builds
 
 ## 🚀 Quick start
 
