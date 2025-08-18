@@ -1,4 +1,4 @@
-name: Lint
+name: CI
 
 on:
   push:
@@ -22,7 +22,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  build_and_lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -44,3 +44,6 @@ jobs:
 
       - name: Build all packages
         run: yarn build:all
+
+      - name: Lint all packages
+        run: yarn lint:all
