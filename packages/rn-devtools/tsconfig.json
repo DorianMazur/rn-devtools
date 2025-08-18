@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
+    "jsx": "react-jsx",
+    "module": "ESNext",
     "target": "ES2022",
-    "module": "ES2022",
     "moduleResolution": "Bundler",
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true,
     "allowJs": false,
     "outDir": "dist"
   },
-  "include": ["cli"]
+  "include": ["cli", "src", "native", "tsup.*.config.ts", "vite.config.ts"]
 }

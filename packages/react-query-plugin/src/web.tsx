@@ -5,13 +5,14 @@ import {
   HydrationBoundary,
   hydrate,
   type QueryKey,
+  type DehydratedState,
 } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-import { createWebPluginClient } from "@rn-devtools/plugin-sdk";
+import { createWebPluginClient, Device } from "@rn-devtools/plugin-sdk";
 
 type PluginProps = {
-  targetDevice: { deviceId?: string; deviceName?: string } | any;
-  allDevices: any[];
+  targetDevice?: Device | null;
+  allDevices?: Device[];
   isDashboardConnected: boolean;
 };
 type DevtoolsPlugin = {
@@ -41,104 +42,168 @@ const Icon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
+type RQActionType =
+  | "invalidate"
+  | "refetch"
+  | "reset"
+  | "remove"
+  | "cancel"
+  | "setData"
+  | "triggerLoading"
+  | "restoreLoading"
+  | "triggerError"
+  | "restoreError";
+
+type RQActionPayload = {
+  queryKey?: QueryKey;
+  exact?: boolean;
+  filters?: Record<string, unknown>;
+  value?: unknown;
+};
+
+type SendAction = (type: RQActionType, payload?: RQActionPayload) => void;
+
+const isObject = (v: unknown): v is Record<string, unknown> =>
+  typeof v === "object" && v !== null;
+
+/** Intercept client-level methods and emit write-through actions */
 function wireClientWriteThrough(
   client: QueryClient,
-  sendAction: (type: string, payload?: any) => void,
+  sendAction: SendAction,
   applyingRemoteRef: React.MutableRefObject<boolean>
 ) {
   const shouldEmit = () => !applyingRemoteRef.current;
 
   const origSet = client.setQueryData.bind(client);
-  client.setQueryData = ((key: QueryKey, updater: any, opts?: any) => {
-    const res = origSet(key as any, updater as any, opts as any);
+  client.setQueryData = ((key, updater, opts) => {
+    const res = origSet(key, updater as never, opts as never);
     if (shouldEmit()) {
       try {
-        const next = client.getQueryData(key as any);
+        const next = client.getQueryData(key);
         sendAction("setData", { queryKey: key, value: next });
-      } catch {}
+      } catch {
+        // ignore
+      }
     }
     return res;
-  }) as any;
+  }) as typeof client.setQueryData;
 
   const origInv = client.invalidateQueries.bind(client);
-  client.invalidateQueries = (async (filters?: any, options?: any) => {
-    const r = await origInv(filters as any, options as any);
-    if (shouldEmit()) sendAction("invalidate", { ...(filters || {}) });
+  client.invalidateQueries = (async (
+    ...args: Parameters<typeof client.invalidateQueries>
+  ) => {
+    const r = await origInv(...args);
+    if (shouldEmit()) {
+      const [filters] = args;
+      sendAction("invalidate", { ...(filters ?? {}) });
+    }
     return r;
-  }) as any;
+  }) as typeof client.invalidateQueries;
 
   const origRef = client.refetchQueries.bind(client);
-  client.refetchQueries = (async (filters?: any, options?: any) => {
-    const r = await origRef(filters as any, options as any);
-    if (shouldEmit()) sendAction("refetch", { ...(filters || {}) });
+  client.refetchQueries = (async (
+    ...args: Parameters<typeof client.refetchQueries>
+  ) => {
+    const r = await origRef(...args);
+    if (shouldEmit()) {
+      const [filters] = args;
+      sendAction("refetch", { ...(filters ?? {}) });
+    }
     return r;
-  }) as any;
+  }) as typeof client.refetchQueries;
 
   const origRes = client.resetQueries.bind(client);
-  client.resetQueries = (async (filters?: any, options?: any) => {
-    const r = await origRes(filters as any, options as any);
-    if (shouldEmit()) sendAction("reset", { ...(filters || {}) });
+  client.resetQueries = (async (
+    ...args: Parameters<typeof client.resetQueries>
+  ) => {
+    const r = await origRes(...args);
+    if (shouldEmit()) {
+      const [filters] = args;
+      sendAction("reset", { ...(filters ?? {}) });
+    }
     return r;
-  }) as any;
+  }) as typeof client.resetQueries;
 
   const origRem = client.removeQueries.bind(client);
-  client.removeQueries = ((filters?: any) => {
-    const r = origRem(filters as any);
-    if (shouldEmit()) sendAction("remove", { ...(filters || {}) });
+  client.removeQueries = ((
+    ...args: Parameters<typeof client.removeQueries>
+  ) => {
+    const r = origRem(...args);
+    if (shouldEmit()) {
+      const [filters] = args;
+      sendAction("remove", { ...(filters ?? {}) });
+    }
     return r;
-  }) as any;
+  }) as typeof client.removeQueries;
 }
 
+type QueryStateLike = {
+  status?: string;
+  fetchStatus?: string;
+  fetchMeta?: unknown | null;
+};
+
+type MinimalQuery = {
+  queryKey: QueryKey;
+  state: QueryStateLike;
+  options?: unknown;
+  fetch?: (opts?: unknown) => Promise<unknown> | unknown;
+  cancel?: (opts?: unknown) => Promise<unknown> | unknown;
+  setState?: (
+    updater: ((prev: QueryStateLike) => QueryStateLike) | QueryStateLike,
+    action?: unknown
+  ) => unknown;
+};
+
+const isMinimalQuery = (q: unknown): q is MinimalQuery =>
+  isObject(q) && "queryKey" in q;
+
 /** Intercept per-query ops; suppress panel’s immediate fetch after setState-derived intents */
-function wirePerQueryInterceptors(
-  client: QueryClient,
-  sendAction: (type: string, payload?: any) => void
-) {
+function wirePerQueryInterceptors(client: QueryClient, sendAction: SendAction) {
   const cache = client.getQueryCache();
-  const seen = new WeakSet<any>();
-  const suppressUntil = new WeakMap<any, number>();
+  const seen = new WeakSet<object>();
+  const suppressUntil = new WeakMap<object, number>();
 
   const now = () =>
     typeof performance !== "undefined" ? performance.now() : Date.now();
-  const isSuppressed = (q: any) => {
+  const isSuppressed = (q: object) => {
     const t = suppressUntil.get(q);
     return typeof t === "number" && now() < t;
   };
-  const suppressNextFetch = (q: any) => {
+  const suppressNextFetch = (q: object) => {
     suppressUntil.set(q, now() + SUPPRESS_MS);
   };
 
-  const patchQuery = (q: any) => {
-    if (!q || seen.has(q)) return;
-    seen.add(q);
+  const patchQuery = (candidate: unknown) => {
+    if (!isMinimalQuery(candidate) || seen.has(candidate as object)) return;
+    const q = candidate;
+    seen.add(q as object);
 
     const key = q.queryKey;
 
-    // Refetch (panel calls q.fetch)
-    const origFetch = q.fetch?.bind(q);
-    q.fetch = async (_opts?: any) => {
-      if (isSuppressed(q)) {
-        // swallow the immediate follow-up fetch after a forced state toggle
-        return Promise.resolve();
-      }
+    // Refetch (panel calls q.fetch) — we emit an action instead.
+    q.fetch = async () => {
+      if (isSuppressed(q as object)) return Promise.resolve(undefined);
       sendAction("refetch", { queryKey: key, exact: true });
-      return Promise.resolve();
+      return Promise.resolve(undefined);
     };
 
     // Cancel
-    const origCancel = q.cancel?.bind(q);
     q.cancel = async () => {
-      if (!isSuppressed(q)) {
+      if (!isSuppressed(q as object)) {
         sendAction("cancel", { queryKey: key, exact: true });
       }
-      return Promise.resolve();
+      return Promise.resolve(undefined);
     };
 
     // Derive intent from panel toggles
     const origSetState = q.setState?.bind(q);
-    q.setState = (updater: any, action: any) => {
+    q.setState = (updater, action) => {
       const prev = q.state;
-      const next = typeof updater === "function" ? updater(prev) : updater;
+      const next =
+        typeof updater === "function"
+          ? (updater as (p: QueryStateLike) => QueryStateLike)(prev)
+          : (updater as QueryStateLike);
 
       let derived:
         | "triggerError"
@@ -164,8 +229,7 @@ function wirePerQueryInterceptors(
       }
 
       if (derived) {
-        // prevent the panel’s immediate q.fetch from undoing the forced state
-        suppressNextFetch(q);
+        suppressNextFetch(q as object);
         sendAction(derived, { queryKey: key });
       }
 
@@ -174,14 +238,20 @@ function wirePerQueryInterceptors(
   };
 
   cache.getAll().forEach(patchQuery);
-  const unsub = cache.subscribe((evt: any) => {
-    if (evt?.query) patchQuery(evt.query);
+  const unsub = cache.subscribe((evt: unknown) => {
+    if (isObject(evt) && "query" in evt) {
+      patchQuery((evt as { query?: unknown }).query);
+    }
   });
   return unsub;
 }
 
 const Panel: React.FC<PluginProps> = ({ targetDevice }) => {
-  const deviceId = targetDevice?.deviceId;
+  const deviceId =
+    (isObject(targetDevice) && typeof targetDevice.deviceId === "string"
+      ? targetDevice.deviceId
+      : undefined) || undefined;
+
   const [client] = React.useState(() => new QueryClient());
   const rq = React.useMemo(
     () => createWebPluginClient(PLUGIN, () => deviceId),
@@ -191,7 +261,7 @@ const Panel: React.FC<PluginProps> = ({ targetDevice }) => {
   const applyingRemote = React.useRef(false);
 
   React.useEffect(() => {
-    const sendAction = (type: string, payload?: any) => {
+    const sendAction: SendAction = (type, payload) => {
       if (!deviceId) return;
       rq.sendMessage(EVT_ACTION, { type, ...(payload || {}) }, deviceId);
     };
@@ -201,18 +271,27 @@ const Panel: React.FC<PluginProps> = ({ targetDevice }) => {
   }, [client, rq, deviceId]);
 
   React.useEffect(() => {
-    const unsubscribe = rq.addMessageListener(EVT_STATE, (payload) => {
-      try {
-        const { dehydrated, ts } = payload || {};
-        if (dehydrated) {
-          applyingRemote.current = true;
-          hydrate(client, dehydrated);
+    const unsubscribe = rq.addMessageListener(
+      EVT_STATE,
+      (payload?: unknown) => {
+        try {
+          if (
+            isObject(payload) &&
+            "dehydrated" in payload &&
+            (payload as { dehydrated?: unknown }).dehydrated
+          ) {
+            applyingRemote.current = true;
+            hydrate(
+              client,
+              (payload as { dehydrated?: DehydratedState }).dehydrated!
+            );
+            applyingRemote.current = false;
+          }
+        } catch {
           applyingRemote.current = false;
         }
-      } catch {
-        applyingRemote.current = false;
       }
-    });
+    );
     return () => {
       unsubscribe();
     };
@@ -233,7 +312,7 @@ const Panel: React.FC<PluginProps> = ({ targetDevice }) => {
 
       <div className="rounded-lg border border-white/10 overflow-hidden">
         <QueryClientProvider client={client}>
-          <HydrationBoundary state={undefined as any}>
+          <HydrationBoundary state={undefined}>
             <ReactQueryDevtoolsPanel />
           </HydrationBoundary>
         </QueryClientProvider>

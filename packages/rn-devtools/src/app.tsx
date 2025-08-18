@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { User } from "virtual:rn-devtools-plugins";
+import { Device } from "virtual:rn-devtools-plugins";
 import { useLogStore } from "./utils/logStore";
 
 import { DeviceSelection } from "./components/DeviceSelection";
@@ -48,15 +48,8 @@ export const getPlatformBgColor = (platform: string): string => {
   }
 };
 
-interface DashProps {
-  allDevices: User[];
-  isDashboardConnected: boolean;
-  targetDevice: User;
-  setTargetDevice: (device: User) => void;
-}
-
 export const Dashboard = () => {
-  const [targetDevice, setTargetDevice] = useState<User>({
+  const [targetDevice, setTargetDevice] = useState<Device>({
     deviceId: "Please select a device",
     deviceName: "Please select a device",
     isConnected: false,
@@ -64,26 +57,17 @@ export const Dashboard = () => {
   });
 
   const { allDevices, isDashboardConnected } = useConnectedUsers();
-  const [showOfflineDevices, setShowOfflineDevices] = useState(true);
-  const { isEnabled, setIsEnabled, isVisible, setIsVisible } = useLogStore();
-  const { activeId, setActiveId, tab, tabs } = useActiveTab(targetDevice);
-
-  const filteredDevices = showOfflineDevices
-    ? allDevices
-    : allDevices.filter((device) => {
-        if (typeof device === "string") {
-          return false;
-        }
-        return device.isConnected;
-      });
+  const { isVisible, setIsVisible } = useLogStore();
+  const { activeId, setActiveId, tabs } = useActiveTab(targetDevice);
 
   // Find the target device
   useEffect(() => {
-    const foundDevice = filteredDevices?.find((device) => {
+    const foundDevice = allDevices?.find((device) => {
       return device.deviceId === targetDevice.deviceId;
     });
-    foundDevice && setTargetDevice(foundDevice);
-  }, [setTargetDevice, filteredDevices, targetDevice]);
+    if (!foundDevice) return;
+    setTargetDevice(foundDevice);
+  }, [setTargetDevice, allDevices, targetDevice]);
 
   return (
     <div className="font-sf-pro">
@@ -97,7 +81,7 @@ export const Dashboard = () => {
                 <DeviceSelection
                   selectedDevice={targetDevice}
                   setSelectedDevice={setTargetDevice}
-                  allDevices={filteredDevices}
+                  allDevices={allDevices}
                 />
               </div>
             </div>

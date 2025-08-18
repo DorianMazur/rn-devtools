@@ -12,43 +12,40 @@ const EVT_STATE = "state";
 const Icon: React.FC<{ className?: string }> = ({ className }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
     <path
-      fill-rule="evenodd"
+      fillRule="evenodd"
       d="M12,23 C5.92486775,23 1,18.0751322 1,12 C1,5.92486775 5.92486775,1 12,1 C18.0751322,1 23,5.92486775 23,12 C23,18.0751322 18.0751322,23 12,23 Z M12,21 C16.9705627,21 21,16.9705627 21,12 C21,7.02943725 16.9705627,3 12,3 C7.02943725,3 3,7.02943725 3,12 C3,16.9705627 7.02943725,21 12,21 Z M17.5811388,6.41886117 L14.7905694,14.7905694 L6.41886117,17.5811388 L9.20943058,9.20943058 L17.5811388,6.41886117 Z M9.58113883,14.4188612 L13.2094306,13.2094306 L14.4188612,9.58113883 L10.7905694,10.7905694 L9.58113883,14.4188612 Z"
     />
   </svg>
 );
 
-/** Build a path array from the navigation state using only route names. */
 function pathFromState(state?: NavigationState) {
   const parts: string[] = [];
-  const walk = (s?: any) => {
+  const walk = (s?: NavigationState) => {
     if (!s) return;
     const idx = typeof s.index === "number" ? s.index : 0;
     const r = s.routes?.[idx];
     if (!r) return;
     parts.push(r.name);
-    if (r.state) walk(r.state);
+    if (r.state) walk(r.state as NavigationState);
   };
   walk(state);
   return parts;
 }
 
-/** Collect params from each level (root -> leaf) of the current focused stack. */
 function collectParamsFromState(state?: NavigationState) {
   const list: Record<string, unknown>[] = [];
-  const walk = (s?: any) => {
+  const walk = (s?: NavigationState) => {
     if (!s) return;
     const idx = typeof s.index === "number" ? s.index : 0;
     const r = s.routes?.[idx];
     if (!r) return;
     list.push((r.params ?? {}) as Record<string, unknown>);
-    if (r.state) walk(r.state);
+    if (r.state) walk(r.state as NavigationState);
   };
   walk(state);
   return list;
 }
 
-/** Merge & format params for display; only primitives and arrays of primitives are expanded. */
 function formatParamsForDisplay(paramsList: Record<string, unknown>[]) {
   // Shallow-merge from root to leaf; leaf overrides collisions.
   const merged: Record<string, unknown> = {};
@@ -92,16 +89,19 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
   >([]);
 
   React.useEffect(() => {
-    const unsubscribe = client.addMessageListener(EVT_STATE, (payload: any) => {
-      const state = payload?.state as NavigationState | undefined;
-      const p = pathFromState(state);
-      const params = formatParamsForDisplay(collectParamsFromState(state));
+    const unsubscribe = client.addMessageListener(
+      EVT_STATE,
+      (payload?: { state: NavigationState }) => {
+        const state = payload?.state as NavigationState | undefined;
+        const p = pathFromState(state);
+        const params = formatParamsForDisplay(collectParamsFromState(state));
 
-      setPath(p);
-      setHistory((h) =>
-        [{ ts: Date.now(), path: p, params }, ...h].slice(0, 20)
-      );
-    });
+        setPath(p);
+        setHistory((h) =>
+          [{ ts: Date.now(), path: p, params }, ...h].slice(0, 20)
+        );
+      }
+    );
     return () => {
       unsubscribe();
     };

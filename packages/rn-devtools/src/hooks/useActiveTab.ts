@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { User } from "virtual:rn-devtools-plugins";
+import { Device } from "virtual:rn-devtools-plugins";
 import { PLUGINS } from "../utils/plugins";
 
 const TAB_QS_KEY = "tab";
 const lsKey = (deviceId?: string) => `devtools.activeTab.${deviceId ?? "all"}`;
 
-export function useActiveTab(targetDevice: User) {
+export function useActiveTab(targetDevice: Device) {
   const deviceKey = targetDevice?.deviceId ?? "All";
   const tabs = Array.isArray(PLUGINS) ? PLUGINS : [];
 

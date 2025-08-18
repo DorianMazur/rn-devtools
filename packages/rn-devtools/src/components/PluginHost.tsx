@@ -1,11 +1,11 @@
 import React from "react";
-import { User, DevtoolsPlugin  } from "virtual:rn-devtools-plugins";
+import { Device, DevtoolsPlugin } from "virtual:rn-devtools-plugins";
 
 type Props = {
   tabs: DevtoolsPlugin[];
   activeId: string;
-  targetDevice: User;
-  allDevices: User[];
+  targetDevice: Device;
+  allDevices: Device[];
   isDashboardConnected: boolean;
 };
 
@@ -14,7 +14,9 @@ class PluginErrorBoundary extends React.Component<
   { error: Error | null }
 > {
   state = { error: null as Error | null };
-  static getDerivedStateFromError(error: Error) { return { error }; }
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
   render() {
     if (this.state.error) {
       return (
@@ -54,12 +56,12 @@ export const PluginHost: React.FC<Props> = ({
             className={isActive ? "" : "hidden"} // keeps it mounted, just hidden
           >
             <PluginErrorBoundary pluginTitle={p.title}>
-            <Mount
-              targetDevice={targetDevice}
-              allDevices={allDevices}
-              isDashboardConnected={isDashboardConnected}
-              active={isActive}
-            />
+              <Mount
+                targetDevice={targetDevice}
+                allDevices={allDevices}
+                isDashboardConnected={isDashboardConnected}
+                active={isActive}
+              />
             </PluginErrorBoundary>
           </section>
         );
@@ -67,4 +69,3 @@ export const PluginHost: React.FC<Props> = ({
     </div>
   );
 };
-

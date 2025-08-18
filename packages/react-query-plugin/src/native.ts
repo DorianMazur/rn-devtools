@@ -1,12 +1,16 @@
 import * as React from "react";
-import type { QueryClient, QueryKey } from "@tanstack/react-query";
+import type {
+  QueryClient,
+  QueryKey,
+  QueryOptions,
+} from "@tanstack/react-query";
 import { dehydrate, focusManager, onlineManager } from "@tanstack/react-query";
 import { createNativePluginClient } from "@rn-devtools/plugin-sdk";
 import { Socket } from "socket.io-client";
 
 type Props = {
   queryClient: QueryClient;
-  socket: Socket;    
+  socket: Socket;
   deviceId: string;
   throttleMs?: number;
 };
@@ -17,9 +21,13 @@ const EVT_REQ = "rq.request";
 const EVT_ACTION = "rq.action";
 
 type ForcedMode = "loading" | "error" | null;
-type Meta = { forced: ForcedMode; prevOptions?: any };
+type Meta = { forced: ForcedMode; prevOptions?: QueryOptions };
 const keyId = (k: QueryKey) => {
-  try { return JSON.stringify(k); } catch { return String(k as any); }
+  try {
+    return JSON.stringify(k);
+  } catch {
+    return String(k);
+  }
 };
 
 export function useReactQueryDevtools({
@@ -29,7 +37,7 @@ export function useReactQueryDevtools({
   throttleMs = 300,
 }: Props) {
   const clientRef = React.useRef(
-    createNativePluginClient(PLUGIN, socket, deviceId )
+    createNativePluginClient(PLUGIN, socket, deviceId)
   );
   const client = clientRef.current;
 
@@ -45,7 +53,7 @@ export function useReactQueryDevtools({
 
   React.useEffect(() => {
     let busy = false;
-    let t: any;
+    let t: NodeJS.Timeout | undefined;
     const schedule = () => {
       if (busy) return;
       busy = true;
@@ -62,29 +70,48 @@ export function useReactQueryDevtools({
 
     const offReq = client.addMessageListener(EVT_REQ, () => sendSnapshot());
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const offAct = client.addMessageListener(EVT_ACTION, async (msg: any) => {
       try {
         const { type, queryKey, exact, filters, value } = msg || {};
         const id = queryKey ? keyId(queryKey) : "";
         const getQuery = () =>
-          queryClient.getQueryCache().find({ queryKey, exact: true, ...(filters || {}) }) as any;
+          queryClient
+            .getQueryCache()
+            .find({ queryKey, exact: true, ...(filters || {}) });
 
         switch (type) {
           // Client-level ops
           case "invalidate":
-            await queryClient.invalidateQueries({ queryKey, exact: exact ?? false, ...(filters || {}) });
+            await queryClient.invalidateQueries({
+              queryKey,
+              exact: exact ?? false,
+              ...(filters || {}),
+            });
             break;
           case "refetch":
-            await queryClient.refetchQueries({ queryKey, exact: exact ?? true, ...(filters || {}) });
+            await queryClient.refetchQueries({
+              queryKey,
+              exact: exact ?? true,
+              ...(filters || {}),
+            });
             // if we were forcing loading, stop forcing so real fetch can complete
             metaRef.current.delete(id);
             break;
           case "reset":
-            await queryClient.resetQueries({ queryKey, exact: exact ?? false, ...(filters || {}) });
+            await queryClient.resetQueries({
+              queryKey,
+              exact: exact ?? false,
+              ...(filters || {}),
+            });
             metaRef.current.delete(id);
             break;
           case "remove":
-            queryClient.removeQueries({ queryKey, exact: exact ?? false, ...(filters || {}) });
+            queryClient.removeQueries({
+              queryKey,
+              exact: exact ?? false,
+              ...(filters || {}),
+            });
             metaRef.current.delete(id);
             break;
           case "cancel": {
@@ -116,7 +143,6 @@ export function useReactQueryDevtools({
               fetchStatus: "fetching",
               fetchMeta: {
                 ...(q.state.fetchMeta || {}),
-                __devtoolsForced: "loading",
               },
             });
             break;
@@ -150,7 +176,6 @@ export function useReactQueryDevtools({
               fetchStatus: "idle",
               fetchMeta: {
                 ...(q.state.fetchMeta || {}),
-                __devtoolsForced: "error",
               },
             });
             break;

@@ -1,11 +1,14 @@
 import * as React from "react";
-import type { NavigationContainerRef } from "@react-navigation/native";
+import type {
+  NavigationContainerRef,
+  ParamListBase,
+} from "@react-navigation/native";
 import { useReduxDevToolsExtension } from "@react-navigation/devtools";
 import { createNativePluginClient } from "@rn-devtools/plugin-sdk";
-import { Socket } from "socket.io-client";
+import type { Socket } from "socket.io-client";
 
 type Props = {
-  navigationRef: React.RefObject<NavigationContainerRef<any>>;
+  navigationRef: React.RefObject<NavigationContainerRef<ParamListBase>>;
   socket: Socket;
   deviceId: string;
 };
@@ -14,23 +17,44 @@ const PLUGIN = "react-navigation";
 const EVT_STATE = "state";
 const EVT_NAV_INVOKE = "navigation.invoke";
 
+type NavInvokePayload =
+  | {
+      method: "resetRoot";
+      args?: Parameters<NavigationContainerRef<ParamListBase>["resetRoot"]>;
+    }
+  | {
+      method: "navigate";
+      args?: Parameters<NavigationContainerRef<ParamListBase>["navigate"]>;
+    }
+  | {
+      method: "dispatch";
+      args?: Parameters<NavigationContainerRef<ParamListBase>["dispatch"]>;
+    }
+  | {
+      method: "goBack";
+      args?: [];
+    };
+
 export function useReactNavigationDevtools({
   navigationRef,
   socket,
   deviceId,
 }: Props) {
   useReduxDevToolsExtension(navigationRef);
+
   const clientRef = React.useRef(
-    createNativePluginClient(PLUGIN, socket, deviceId )
+    createNativePluginClient(PLUGIN, socket, deviceId)
   );
   const client = clientRef.current;
-  // send snapshots UP
+
   React.useEffect(() => {
     const send = () => {
       const state = navigationRef.current?.getRootState?.();
-      console.log("[rn-devtools] Sending navigation state", state);
-      if (state) client.sendMessage(EVT_STATE, { state });
+      if (state) {
+        client.sendMessage(EVT_STATE, { state });
+      }
     };
+
     const unsub = navigationRef.current?.addListener?.("state", send);
     const t = setTimeout(send, 0);
     return () => {
@@ -42,18 +66,45 @@ export function useReactNavigationDevtools({
   React.useEffect(() => {
     const unsubscribe = client.addMessageListener(
       EVT_NAV_INVOKE,
-      ({ method, args = [] }) => {
-        const nav: any = navigationRef.current;
+      (payload?: NavInvokePayload) => {
+        const nav =
+          navigationRef.current as NavigationContainerRef<ParamListBase> | null;
         if (!nav) return;
-        if (method === "resetRoot") return nav.resetRoot?.(args[0]);
-        return typeof nav[method] === "function"
-          ? nav[method](...args)
-          : undefined;
+
+        switch (payload?.method) {
+          case "resetRoot": {
+            const [state] = payload.args ?? [];
+            return nav.resetRoot?.(state);
+          }
+
+          case "navigate": {
+            const args = (payload.args ?? []) as Parameters<
+              NavigationContainerRef<ParamListBase>["navigate"]
+            >;
+            return nav.navigate(...args);
+          }
+
+          case "dispatch": {
+            const args = (payload.args ?? []) as Parameters<
+              NavigationContainerRef<ParamListBase>["dispatch"]
+            >;
+            return nav.dispatch(...args);
+          }
+
+          case "goBack": {
+            return nav.goBack();
+          }
+
+          default:
+            return undefined;
+        }
       }
     );
+
     return () => {
       unsubscribe();
     };
   }, [client, navigationRef]);
 }
+
 export default useReactNavigationDevtools;

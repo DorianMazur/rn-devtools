@@ -1,5 +1,5 @@
 import { logInfo, logError, logWarn, logDebug } from "./logStore";
-import { User } from "virtual:rn-devtools-plugins";
+import { Device } from "virtual:rn-devtools-plugins";
 
 /**
  * A logger utility that both logs to the console and to our LogStore for display in the UI
@@ -8,7 +8,7 @@ export const logger = {
   /**
    * Log informational message
    */
-  info: (message: string, deviceInfo?: Partial<User>) => {
+  info: (message: string, deviceInfo?: Partial<Device>) => {
     console.info(message);
     logInfo(message, deviceInfo);
   },
@@ -16,7 +16,7 @@ export const logger = {
   /**
    * Log warning message
    */
-  warn: (message: string, deviceInfo?: Partial<User>) => {
+  warn: (message: string, deviceInfo?: Partial<Device>) => {
     console.warn(message);
     logWarn(message, deviceInfo);
   },
@@ -24,7 +24,7 @@ export const logger = {
   /**
    * Log error message
    */
-  error: (message: string, deviceInfo?: Partial<User>) => {
+  error: (message: string, deviceInfo?: Partial<Device>) => {
     console.error(message);
     logError(message, deviceInfo);
   },
@@ -32,7 +32,7 @@ export const logger = {
   /**
    * Log debug message
    */
-  debug: (message: string, deviceInfo?: Partial<User>) => {
+  debug: (message: string, deviceInfo?: Partial<Device>) => {
     console.debug(message);
     logDebug(message, deviceInfo);
   },
@@ -40,7 +40,7 @@ export const logger = {
   /**
    * Regular log - maps to info level
    */
-  log: (message: string, deviceInfo?: Partial<User>) => {
+  log: (message: string, deviceInfo?: Partial<Device>) => {
     console.log(message);
     logInfo(message, deviceInfo);
   },
@@ -49,7 +49,7 @@ export const logger = {
 /**
  * Create a logger instance pre-configured with a specific device
  */
-export const createDeviceLogger = (device: User) => {
+export const createDeviceLogger = (device: Device) => {
   const deviceInfo = {
     deviceId: device.deviceId,
     deviceName: device.deviceName,

@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { User } from "virtual:rn-devtools-plugins";
+import { Device } from "virtual:rn-devtools-plugins";
 import { PlatformIcon } from "../utils/platformUtils";
 
 interface Props {
-  selectedDevice: User;
-  setSelectedDevice: (device: User) => void;
-  allDevices?: User[];
+  selectedDevice: Device;
+  setSelectedDevice: (device: Device) => void;
+  allDevices?: Device[];
 }
 
 interface DeviceOption {

@@ -6,6 +6,7 @@ type Hello = {
   deviceName?: string;
   platform?: string;
 };
+
 type PluginMsg = {
   pluginId: string;
   deviceId?: string;
@@ -97,7 +98,6 @@ export default function socketHandle({ io }: { io: Server }) {
     if (qRole === "dashboard" || qName === "Dashboard") {
       dashboards.add(socket.id);
       socket.join("dashboards");
-      // send current devices right away
       broadcastDevices();
     } else if (qRole === "device" && qDeviceId) {
       upsertDevice(qDeviceId, socket.id, qName, qPlatform);
@@ -145,7 +145,7 @@ export default function socketHandle({ io }: { io: Server }) {
 
     // Dashboards -> Device
     socket.on("plugin:down", (msg: PluginMsg) => {
-      if (!dashboards.has(socket.id)) return; // only dashboards can send commands
+      if (!dashboards.has(socket.id)) return;
       const pluginId = sanitizePluginId(msg?.pluginId || "");
       const event = sanitizeEvent(msg?.event || "");
       const deviceId = msg?.deviceId;

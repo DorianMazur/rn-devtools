@@ -1,10 +1,11 @@
 export let useReactNativeDevtools: typeof import("./useReactNativeDevtools").useReactNativeDevtools;
 
-// @ts-ignore process.env.NODE_ENV is defined by metro transform plugins
 if (process.env.NODE_ENV !== "production") {
   useReactNativeDevtools =
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require("./useReactNativeDevtools").useReactNativeDevtools;
 } else {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   useReactNativeDevtools = () => {};
 }

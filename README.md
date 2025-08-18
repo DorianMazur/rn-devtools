@@ -32,7 +32,6 @@ yarn add @rn-devtools/react-query-plugin @rn-devtools/react-navigation-plugin
 Create rn-devtools.config.js in your RN app:
 
 ```js
-/** @type {import('@rn-devtools/rn-devtools/config').DevtoolsConfig} */
 module.exports = {
   plugins: [
     "@rn-devtools/react-query-plugin",
@@ -51,7 +50,7 @@ rn-devtools
 1. Wire the RN app (one hook, many plugins)
 
 ```tsx
-import { useReactNativeDevtools } from "@rn-devtools/plugin-sdk/native";
+import { useReactNativeDevtools } from "rn-devtools";
 import { useReactQueryDevtools } from "@rn-devtools/react-query-plugin/native";
 import { useReactNavigationDevtools } from "@rn-devtools/react-navigation-plugin/native";
 
@@ -77,5 +76,3 @@ DevTools opens on http://localhost:35515
 
 ## License
 This project is licenced under the [MIT License](http://opensource.org/licenses/mit-license.html).
-
-Any bundled fonts are copyright to their respective authors and mostly under MIT or [SIL OFL](http://scripts.sil.org/OFL).

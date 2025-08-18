@@ -20,7 +20,6 @@ import { useReactNativeDevtools } from "rn-devtools";
 import { useReactNavigationDevtools } from "@rn-devtools/react-navigation-plugin/native";
 import { useReactQueryDevtools } from "@rn-devtools/react-query-plugin/native";
 
-// 🔹 NEW: React Navigation
 import {
   NavigationContainer,
   useNavigation,
@@ -136,7 +135,6 @@ function KeyValue({ label, value }: { label: string; value?: string }) {
   );
 }
 
-// 🔹 NEW: Strongly-typed route params
 type RootStackParamList = {
   Home: undefined;
   BreedDetails: { id: string };
@@ -170,7 +168,6 @@ function BreedsList() {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Flatten pages and apply client-side search
   const breeds = React.useMemo(() => {
     const list =
       data?.pages.flatMap((p) =>
@@ -235,7 +232,6 @@ function BreedsList() {
   );
 }
 
-// 🔹 NEW: Details screen (modal presentation)
 function BreedDetailsScreen({
   route,
   navigation,
@@ -309,7 +305,6 @@ function BreedDetailsScreen({
   );
 }
 
-// 🔹 NEW: Home screen
 function HomeScreen() {
   return (
     <SafeAreaView style={styles.safe}>
@@ -332,7 +327,7 @@ export default function App() {
       new QueryClient({
         defaultOptions: {
           queries: {
-            gcTime: 30 * 60 * 1000, // keep cached for a while
+            gcTime: 30 * 60 * 1000,
             retry: 1,
           },
         },

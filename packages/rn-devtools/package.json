@@ -12,9 +12,13 @@
     }
   },
   "scripts": {
+    "lint:eslint": "eslint .",
+    "lint:tsc": "tsc --noEmit",
+    "lint": "yarn lint:eslint && yarn lint:tsc",
     "build:web": "vite build",
     "build:cli": "tsup --config=./tsup.cli.config.ts",
-    "build:native": "tsup --config=./tsup.native.config.ts"
+    "build:native": "tsup --config=./tsup.native.config.ts",
+    "build": "yarn build:web && yarn build:cli && yarn build:native"
   },
   "bin": "./bin/index.js",
   "dependencies": {
@@ -32,10 +36,13 @@
     "zustand": "5.0.7"
   },
   "devDependencies": {
-    "@react-router/dev": "^7.7.1",
     "@tailwindcss/vite": "^4.1.4",
+    "eslint": "^9.4.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "7.37.5",
     "tailwindcss": "^4.1.4",
     "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
     "vite": "^6.3.3",
     "vite-tsconfig-paths": "^5.1.4"
   }

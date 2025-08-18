@@ -90,9 +90,7 @@ async function resolveWithImportMeta(
     const parent = pathToFileURL(
       path.join(projectRoot, "__rn_devtools_resolve__.mjs")
     ).href;
-    // @ts-ignore Node 20+
-    const r = import.meta.resolve(spec, parent);
-    const url = typeof r === "string" ? r : await r;
+    const url = import.meta.resolve(spec, parent);
     return url.startsWith("file:") ? fileURLToPath(url) : url;
   } catch {
     return null;
@@ -301,7 +299,9 @@ export default function devtoolsPlugins(opts: Options = {}): Plugin {
             const cand = mod?.default?.plugin ?? mod?.plugin ?? mod?.default ?? mod;
             if (!cand) return null;
             try {
-              return (typeof cand === "function") ? cand(${JSON.stringify(pluginOpts)}) : cand;
+              return (typeof cand === "function") ? cand(${JSON.stringify(
+                pluginOpts
+              )}) : cand;
             } catch (e) {
               console.warn("[rn-devtools] Plugin factory for ${pkg} threw:", e);
               return null;

@@ -1,4 +1,4 @@
-export type User = {
+export type Device = {
   id: string;
   deviceId: string;
   deviceName: string;
@@ -7,9 +7,17 @@ export type User = {
 };
 
 export type PluginProps = {
-  targetDevice: User;
-  allDevices: User[];
+  targetDevice: Device;
+  allDevices: Device[];
   isDashboardConnected: boolean;
+};
+
+export type PluginMsg = {
+  pluginId: string;
+  deviceId?: string;
+  event: string;
+  payload?: Record<string, unknown>;
+  timestamp?: number;
 };
 
 export type DevtoolsPlugin = {

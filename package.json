@@ -6,15 +6,22 @@
     "packages/*",
     "example"
   ],
+  "scripts": {
+    "lint": "eslint .",
+    "lint:all": "yarn workspaces foreach --all --parallel run lint",
+    "build:all": "yarn workspaces foreach --all --parallel run build"
+  },
   "devDependencies": {
+    "@eslint/js": "^9.33.0",
     "@types/node": "^20",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
-    "eslint": "9.33.0",
-    "eslint-config-universe": "15.0.3",
-    "prettier": "^3.3.3",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^16.3.0",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.39.1"
   },
   "packageManager": "yarn@4.9.2"
 }

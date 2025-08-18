@@ -1,10 +1,13 @@
 import type { Socket } from "socket.io-client";
+import { PluginMsg } from "./types";
 
 export type NativeBus = {
-  sendMessage: (event: string, payload?: any) => void;
-  addMessageListener: (event: string, cb: (payload: any) => void) => () => void;
+  sendMessage: (event: string, payload?: unknown) => void;
+  addMessageListener: <T = unknown>(
+    event: string,
+    cb: (payload: T) => void
+  ) => () => void;
 };
-const test = "";
 
 export function createNativePluginClient(
   pluginId: string,
@@ -21,14 +24,14 @@ export function createNativePluginClient(
         timestamp: Date.now(),
       });
     },
-    addMessageListener(event, cb) {
-      const handler = (msg: any) => {
+    addMessageListener<T = unknown>(event: string, cb: (payload: T) => void) {
+      const handler = (msg: PluginMsg) => {
         if (
           msg?.pluginId === pluginId &&
           msg?.deviceId === deviceId &&
           msg?.event === event
         ) {
-          cb(msg.payload);
+          if (typeof msg.payload !== "undefined") cb(msg.payload as T);
         }
       };
       socket.on("plugin:down", handler);

@@ -1,6 +1,6 @@
 import io, { Socket } from "socket.io-client";
 import { useEffect, useState } from "react";
-import { User } from "virtual:rn-devtools-plugins";
+import { Device } from "virtual:rn-devtools-plugins";
 
 let socket = null as Socket | null;
 
@@ -9,7 +9,7 @@ export function useConnectedUsers() {
   const [isDashboardConnected, setIsDashboardConnected] = useState(
     !!socket?.connected
   );
-  const [allDevices, setAllDevices] = useState<User[]>([]);
+  const [allDevices, setAllDevices] = useState<Device[]>([]);
 
   if (!socket) {
     const enhancedQuery = {
@@ -56,10 +56,12 @@ export function useConnectedUsers() {
       console.error("[DASHBOARD] Connection error:", error.message);
     }
 
-    !socket?.connected && connect();
+    if (!socket?.connected) {
+      connect();
+    }
 
     // Listen for all devices updates (including offline devices)
-    socket?.on("all-devices-update", (devices: User[]) => {
+    socket?.on("all-devices-update", (devices: Device[]) => {
       console.log(
         "[DASHBOARD] Received all-devices-update:",
         devices.length,

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLogStore, LogEntry, LogLevel } from "../utils/logStore";
 import { PlatformIcon } from "../utils/platformUtils";
-import { User } from "virtual:rn-devtools-plugins";
+import { Device } from "virtual:rn-devtools-plugins";
 
 // Get log level color
 const getLogLevelColor = (level: LogLevel): string => {
@@ -76,7 +76,7 @@ interface DeviceOption {
 
 interface LogConsoleProps {
   onClose: () => void;
-  allDevices: User[];
+  allDevices: Device[];
 }
 
 export const LogConsole: React.FC<LogConsoleProps> = ({
@@ -96,7 +96,6 @@ export const LogConsole: React.FC<LogConsoleProps> = ({
 
   // Resizable functionality
   const [height, setHeight] = useState(320); // Default height in pixels
-  const resizableRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   // Calculate max height based on window height
