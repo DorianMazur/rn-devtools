@@ -28,6 +28,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - run: npm install -g corepack
+
+      - run: corepack enable
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
