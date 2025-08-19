@@ -55,7 +55,7 @@ export default function socketHandle({ io }: { io: Server }) {
     socketId: string,
     name?: string,
     platform?: string,
-    meta?: any
+    meta?: any,
   ) => {
     let d = devices.get(deviceId);
     if (!d) {
@@ -115,7 +115,7 @@ export default function socketHandle({ io }: { io: Server }) {
           upsertDevice(deviceId, socket.id, deviceName, platform);
           broadcastDevices();
         }
-      }
+      },
     );
 
     // Device -> Dashboards
@@ -124,7 +124,7 @@ export default function socketHandle({ io }: { io: Server }) {
       const event = sanitizeEvent(msg?.event || "");
       // derive deviceId from the room membership if not provided
       const roomDev = Array.from(socket.rooms).find((r) =>
-        r.startsWith("device:")
+        r.startsWith("device:"),
       );
       const derivedId = roomDev?.slice("device:".length);
       const deviceId = msg?.deviceId || derivedId;

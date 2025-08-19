@@ -4,20 +4,20 @@
   "license": "MIT",
   "version": "0.0.1",
   "description": "React Navigation tab for rn-devtools",
-  "main": "dist/web.js",
-  "types": "dist/web.d.ts",
+  "main": "dist/web.mjs",
+  "types": "dist/web.d.mts",
   "exports": {
     ".": {
-      "import": "./dist/web.js",
-      "types": "./dist/web.d.ts"
+      "import": "./dist/web.mjs",
+      "types": "./dist/web.d.mts"
     },
     "./web": {
-      "import": "./dist/web.js",
-      "types": "./dist/web.d.ts"
+      "import": "./dist/web.mjs",
+      "types": "./dist/web.d.mts"
     },
     "./native": {
-      "import": "./dist/native.js",
-      "types": "./dist/native.d.ts"
+      "import": "./dist/native.mjs",
+      "types": "./dist/native.d.mts"
     }
   },
   "files": [
@@ -25,6 +25,7 @@
   ],
   "scripts": {
     "lint:eslint": "eslint .",
+    "lint:eslint:fix": "eslint . --fix",
     "lint:tsc": "tsc --noEmit",
     "lint": "yarn lint:eslint && yarn lint:tsc",
     "build": "tsup src/web.tsx src/native.ts --format esm --dts --clean --external react --external react-dom --external socket.io-client"

@@ -43,7 +43,7 @@ export function useReactNavigationDevtools({
   useReduxDevToolsExtension(navigationRef);
 
   const clientRef = React.useRef(
-    createNativePluginClient(PLUGIN, socket, deviceId)
+    createNativePluginClient(PLUGIN, socket, deviceId),
   );
   const client = clientRef.current;
 
@@ -98,7 +98,7 @@ export function useReactNavigationDevtools({
           default:
             return undefined;
         }
-      }
+      },
     );
 
     return () => {

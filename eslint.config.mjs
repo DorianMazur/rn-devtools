@@ -1,11 +1,7 @@
 import globals from "globals";
 import js from "@eslint/js";
-import prettierConfig from "eslint-config-prettier";
+import prettierPlugin from "eslint-plugin-prettier/recommended";
 
-/**
- * Configs that should only apply to repo root (shouldn't be inherited in subdirectories)
- * @type {Array<import('eslint').Linter.FlatConfig>}
- */
 const rootConfigs = [
   {
     ignores: [
@@ -63,25 +59,10 @@ export const baseConfigs = [
     files: ["**/*.{js,mjs,cjs}", "**/.*.{js,mjs,cjs}"],
     ...js.configs.recommended,
   },
-  prettierConfig,
-  {
-    rules: {
-      camelcase: [
-        1,
-        {
-          properties: "always",
-        },
-      ],
-      "no-var": "error",
-      "no-alert": "error",
-      eqeqeq: "error",
-      "prefer-const": "warn",
-      "object-shorthand": "warn",
-    },
-  },
+  prettierPlugin,
 ];
 
 const configs = [...baseConfigs, ...rootConfigs];
 
-export { globals, prettierConfig };
+export { globals, prettierPlugin };
 export default configs;

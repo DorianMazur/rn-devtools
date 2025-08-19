@@ -30,7 +30,7 @@ function readJsonSafe(p: string): any | null {
 function findConfigFileUpwards(
   startDir: string,
   searchDepth = 6,
-  explicit?: string
+  explicit?: string,
 ): string | null {
   if (explicit) {
     if (fs.existsSync(explicit)) return explicit;
@@ -84,11 +84,11 @@ async function loadConfigFromFile(file: string | null): Promise<Config | null> {
 // Node 20+: resolve a specifier relative to the RN project root
 async function resolveWithImportMeta(
   projectRoot: string,
-  spec: string
+  spec: string,
 ): Promise<string | null> {
   try {
     const parent = pathToFileURL(
-      path.join(projectRoot, "__rn_devtools_resolve__.mjs")
+      path.join(projectRoot, "__rn_devtools_resolve__.mjs"),
     ).href;
     const url = import.meta.resolve(spec, parent);
     return url.startsWith("file:") ? fileURLToPath(url) : url;
@@ -99,7 +99,7 @@ async function resolveWithImportMeta(
 
 function resolveViaPackageJson(
   projectRoot: string,
-  spec: string
+  spec: string,
 ): string | null {
   try {
     const tryPaths = [
@@ -153,7 +153,7 @@ export default function devtoolsPlugins(opts: Options = {}): Plugin {
       configPath = findConfigFileUpwards(
         projectRoot,
         opts.searchDepth ?? 6,
-        opts.configFile || process.env.RN_DEVTOOLS_CONFIG
+        opts.configFile || process.env.RN_DEVTOOLS_CONFIG,
       );
     }
     const cfg = await loadConfigFromFile(configPath);
@@ -200,7 +200,7 @@ export default function devtoolsPlugins(opts: Options = {}): Plugin {
                 root,
                 path.dirname(pr),
                 path.dirname(path.dirname(pr)),
-              ])
+              ]),
             ),
           },
         },
@@ -224,7 +224,7 @@ export default function devtoolsPlugins(opts: Options = {}): Plugin {
       configPath = findConfigFileUpwards(
         projectRoot,
         opts.searchDepth ?? 6,
-        explicitCfg
+        explicitCfg,
       );
 
       console.log("[rn-devtools] Vite root:", viteRoot);
@@ -250,7 +250,7 @@ export default function devtoolsPlugins(opts: Options = {}): Plugin {
         configPath = findConfigFileUpwards(
           projectRoot,
           opts.searchDepth ?? 6,
-          opts.configFile || process.env.RN_DEVTOOLS_CONFIG
+          opts.configFile || process.env.RN_DEVTOOLS_CONFIG,
         );
       }
 
@@ -279,7 +279,7 @@ export default function devtoolsPlugins(opts: Options = {}): Plugin {
         if (!resolved) {
           console.warn(
             `[rn-devtools] Could not resolve "${pkg}" from project root ${projectRoot}. ` +
-              `Is it installed and built? Falling back to bare specifier.`
+              `Is it installed and built? Falling back to bare specifier.`,
           );
         } else {
           try {
@@ -300,7 +300,7 @@ export default function devtoolsPlugins(opts: Options = {}): Plugin {
             if (!cand) return null;
             try {
               return (typeof cand === "function") ? cand(${JSON.stringify(
-                pluginOpts
+                pluginOpts,
               )}) : cand;
             } catch (e) {
               console.warn("[rn-devtools] Plugin factory for ${pkg} threw:", e);

@@ -105,7 +105,7 @@ const platformConfiguration: Record<string, PlatformConfig> = {
 
 // Helper to get platform config safely
 const getPlatformConfig = (
-  platform: string | undefined | null
+  platform: string | undefined | null,
 ): PlatformConfig => {
   const normalizedPlatform = platform?.toLowerCase() || "";
   return (

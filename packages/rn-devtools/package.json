@@ -13,6 +13,7 @@
   },
   "scripts": {
     "lint:eslint": "eslint .",
+    "lint:eslint:fix": "eslint . --fix",
     "lint:tsc": "tsc --noEmit",
     "lint": "yarn lint:eslint && yarn lint:tsc",
     "build:web": "vite build",

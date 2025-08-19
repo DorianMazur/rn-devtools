@@ -7,7 +7,7 @@ let socket = null as Socket | null;
 export function useConnectedUsers() {
   const socketURL = "http://localhost:35515";
   const [isDashboardConnected, setIsDashboardConnected] = useState(
-    !!socket?.connected
+    !!socket?.connected,
   );
   const [allDevices, setAllDevices] = useState<Device[]>([]);
 
@@ -65,7 +65,7 @@ export function useConnectedUsers() {
       console.log(
         "[DASHBOARD] Received all-devices-update:",
         devices.length,
-        "devices"
+        "devices",
       );
       setAllDevices(devices);
     });
@@ -77,7 +77,7 @@ export function useConnectedUsers() {
     if (socket?.connected) {
       console.log(
         "[DASHBOARD] Socket already connected on mount with ID:",
-        socket.id
+        socket.id,
       );
     }
 

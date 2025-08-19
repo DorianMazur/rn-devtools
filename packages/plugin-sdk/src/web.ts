@@ -6,7 +6,7 @@ export type WebBus = {
   sendMessage: (event: string, payload?: unknown, deviceId?: string) => void;
   addMessageListener: <T = unknown>(
     event: string,
-    cb: (payload: T, meta: { deviceId: string }) => void
+    cb: (payload: T, meta: { deviceId: string }) => void,
   ) => () => void;
 };
 
@@ -21,7 +21,7 @@ function getSocket(): Socket {
 
 export function createWebPluginClient(
   pluginId: string,
-  getDeviceId: () => string | undefined
+  getDeviceId: () => string | undefined,
 ): WebBus {
   const socket = getSocket();
 
@@ -39,14 +39,16 @@ export function createWebPluginClient(
     },
     addMessageListener<T = unknown>(
       event: string,
-      cb: (payload: T, meta: { deviceId: string }) => void
+      cb: (payload: T, meta: { deviceId: string }) => void,
     ) {
       const handler = (msg: PluginMsg) => {
+        const current = getDeviceId();
+        if (!current) return;
+
         if (msg.pluginId !== pluginId) return;
         if (msg.event !== event) return;
-        const current = getDeviceId();
-        if (current && msg.deviceId === undefined && msg.deviceId !== current)
-          return;
+        if (msg.deviceId === undefined && msg.deviceId !== current) return;
+
         if (typeof msg.payload !== "undefined") {
           cb(msg.payload as T, { deviceId: msg.deviceId as string });
         }

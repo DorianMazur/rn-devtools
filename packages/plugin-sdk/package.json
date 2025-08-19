@@ -17,6 +17,7 @@
   ],
   "scripts": {
     "lint:eslint": "eslint .",
+    "lint:eslint:fix": "eslint . --fix",
     "lint:tsc": "tsc --noEmit",
     "lint": "yarn lint:eslint && yarn lint:tsc",
     "build": "tsup src/index.ts --format esm --dts --clean --external react --external react-dom --external socket.io-client"

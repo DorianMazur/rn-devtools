@@ -1,173 +1,97 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Device } from "virtual:rn-devtools-plugins";
+import React, { useEffect, useRef, useState } from "react";
+import type { Device } from "virtual:rn-devtools-plugins";
 import { PlatformIcon } from "../utils/platformUtils";
 
-interface Props {
-  selectedDevice: Device;
-  setSelectedDevice: (device: Device) => void;
+type Props = {
+  selectedDevice: Device | null;
+  setSelectedDevice: (device: Device | null) => void;
   allDevices?: Device[];
-}
-
-interface DeviceOption {
-  value: string;
-  label: string;
-  isOffline?: boolean;
-  platform?: string;
-}
+};
 
 export const DeviceSelection: React.FC<Props> = ({
   selectedDevice,
   setSelectedDevice,
   allDevices = [],
-}: Props) => {
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node))
         setIsOpen(false);
-      }
     };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
   }, []);
 
-  // Generate options
-  const generateOptions = (): DeviceOption[] => {
-    if (allDevices.length === 0) {
-      return [
-        {
-          value: "All",
-          label: "No Devices",
-        },
-      ];
-    }
+  const devicesSorted = [...allDevices].sort((a, b) => {
+    const oa = !!a.isConnected;
+    const ob = !!b.isConnected;
+    if (oa !== ob) return oa ? -1 : 1; // online first
+    return (a.deviceName || "").localeCompare(b.deviceName || "");
+  });
 
-    if (allDevices.length === 1) {
-      const device = allDevices[0];
-      return [
-        {
-          value: device.deviceId,
-          label: device.deviceName,
-          isOffline: !device.isConnected,
-          platform: device.platform,
-        },
-      ];
-    }
-
-    // Multiple devices - add 'All' option
-    return [
-      {
-        value: "All",
-        label: "All Devices",
-      },
-      ...allDevices.map((device) => ({
-        value: device.deviceId,
-        label: device.deviceName,
-        isOffline: !device.isConnected,
-        platform: device.platform,
-      })),
-    ];
-  };
-
-  const deviceOptions = generateOptions();
-
-  // If there are no devices, select "All"
-  useEffect(() => {
-    if (!selectedDevice || !selectedDevice.deviceId) {
-      if (deviceOptions.length > 0) {
-        const foundDevice = allDevices.find(
-          (device) => device.deviceId === "All"
-        );
-        if (foundDevice) {
-          setSelectedDevice(foundDevice);
-        }
-      }
-    }
-
-    // If the selected device is no longer in the device list, select "All"
-    if (
-      selectedDevice &&
-      selectedDevice.deviceId !== "All" &&
-      !allDevices.find((device) => device.deviceId === selectedDevice.deviceId)
-    ) {
-      const foundDevice = allDevices.find(
-        (device) => device.deviceId === "All"
-      );
-      if (foundDevice) {
-        setSelectedDevice(foundDevice);
-      }
-    }
-  }, [allDevices, selectedDevice, setSelectedDevice, deviceOptions]);
-
-  // Handle device selection
   const handleSelect = (deviceId: string) => {
-    if (deviceId === "All") {
-      setSelectedDevice({
-        id: "all-devices",
-        deviceId: "All",
-        deviceName: "All Devices",
-        isConnected: true,
-        platform: undefined,
-      });
-    } else {
-      const device = allDevices.find((d) => d.deviceId === deviceId);
-      if (device) {
-        setSelectedDevice(device);
-      }
-    }
+    const d = allDevices.find((x) => x.deviceId === deviceId) || null;
+    setSelectedDevice(d);
     setIsOpen(false);
   };
 
-  // Get selected device label
-  const getSelectedDeviceLabel = (): string => {
-    if (!selectedDevice || !selectedDevice.deviceId) {
-      return deviceOptions[0]?.label || "All Devices";
-    }
+  const label =
+    selectedDevice?.deviceName ??
+    (allDevices.length ? "Select a device" : "No devices");
 
-    return selectedDevice.deviceName || "Unknown Device";
-  };
-
-  const StatusDot: React.FC<{ isOffline?: boolean }> = ({ isOffline }) => (
+  const StatusDot: React.FC<{ offline?: boolean }> = ({ offline }) => (
     <span
       className={`w-1.5 h-1.5 rounded-full ${
-        isOffline ? "bg-red-500" : "bg-green-500"
+        offline ? "bg-red-500" : "bg-green-500"
       }`}
     />
   );
 
   return (
-    <div ref={ref} className="relative w-52 font-sf-pro">
+    <div ref={ref} className="relative w-56 font-sf-pro">
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium transition-all duration-300 
-        ${
+        onClick={() => setIsOpen((v) => !v)}
+        className={`flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium border rounded-xl transition-all duration-300 ${
           isOpen
             ? "text-white bg-[#2D2D2F] border-blue-500/40 ring-2 ring-blue-500/10 shadow-[0_0_12px_rgba(59,130,246,0.15)]"
             : "text-white bg-[#1A1A1C] hover:bg-[#2D2D2F] border-[#2D2D2F]"
-        } border rounded-xl`}
+        }`}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
         <div className="flex items-center gap-2 truncate">
-          {selectedDevice?.platform ? (
+          {selectedDevice ? (
             <>
-              <StatusDot isOffline={!selectedDevice.isConnected} />
+              <StatusDot offline={!selectedDevice.isConnected} />
               <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#0A0A0C]">
                 <PlatformIcon
-                  platform={selectedDevice.platform}
+                  platform={selectedDevice.platform || ""}
                   className="w-3 h-3"
                 />
               </span>
             </>
-          ) : null}
-          <span className="truncate">{getSelectedDeviceLabel()}</span>
+          ) : (
+            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#0A0A0C]">
+              <svg
+                className="w-3 h-3 text-gray-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                />
+              </svg>
+            </span>
+          )}
+          <span className="truncate">{label}</span>
         </div>
         <svg
           className={`w-4 h-4 ml-2 transition-transform duration-300 ${
@@ -188,84 +112,40 @@ export const DeviceSelection: React.FC<Props> = ({
 
       {isOpen && (
         <div className="absolute z-50 w-full mt-2 animate-scaleIn">
-          <div className="py-1 overflow-hidden bg-[#1A1A1C] rounded-xl shadow-lg border border-[#2D2D2F] ring-1 ring-black/5 shadow-[0_0.5rem_1rem_rgba(0,0,0,0.3)]">
-            {/* Sticky header for All Devices */}
-            {deviceOptions.length > 1 && deviceOptions[0].value === "All" && (
-              <div className="sticky top-0 z-10 bg-[#1A1A1C] border-b border-[#2D2D2F]/70">
-                <button
-                  type="button"
-                  className={`flex items-center w-full px-4 py-3 text-sm font-medium border-b border-[#2D2D2F] transition-colors duration-300 ${
-                    selectedDevice?.deviceId === "All"
-                      ? "bg-blue-900/20 text-blue-300"
-                      : "text-white hover:bg-[#2D2D2F]"
-                  }`}
-                  onClick={() => handleSelect("All")}
-                >
-                  <span className="w-1.5" /> {/* Spacer for alignment */}
-                  <span className="flex items-center justify-center w-5 h-5 mr-2 rounded-full bg-[#0A0A0C]">
-                    <svg
-                      className="w-3 h-3 text-blue-400"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                      />
-                    </svg>
-                  </span>
-                  All Devices
-                  {selectedDevice?.deviceId === "All" && (
-                    <svg
-                      className="w-4 h-4 ml-auto text-blue-400"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  )}
-                </button>
-              </div>
-            )}
+          <div className="overflow-hidden rounded-xl shadow-lg border border-[#2D2D2F] ring-1 ring-black/5 bg-[#1A1A1C]">
+            {/* Non-selectable header */}
+            <div className="sticky top-0 z-10 px-4 py-2 text-xs font-semibold tracking-wide uppercase text-[#A1A1A6] bg-[#1A1A1C] border-b border-[#2D2D2F]/70 select-none cursor-default">
+              {allDevices.length ? "Select a device" : "No devices"}
+            </div>
 
-            {/* Individual devices */}
             <div className="max-h-56 overflow-y-auto p-1">
-              {deviceOptions
-                .filter((option) => option.value !== "All")
-                .map((option, index) => (
+              {devicesSorted.map((d, idx) => {
+                const active = selectedDevice?.deviceId === d.deviceId;
+                return (
                   <button
-                    key={option.value}
+                    key={d.deviceId}
                     type="button"
+                    onClick={() => handleSelect(d.deviceId)}
                     className={`flex items-center w-full px-3 py-2 text-sm rounded-lg my-0.5 transition-all duration-300 ${
-                      selectedDevice?.deviceId === option.value
+                      active
                         ? "bg-blue-500/10 text-blue-300 ring-1 ring-blue-500/20"
-                        : option.isOffline
+                        : !d.isConnected
                           ? "text-gray-400 hover:bg-[#2D2D2F]/50"
                           : "text-white hover:bg-[#2D2D2F]/70"
                     }`}
-                    onClick={() => handleSelect(option.value)}
-                    style={{ animationDelay: `${index * 30}ms` }}
+                    style={{ animationDelay: `${idx * 24}ms` }}
+                    role="option"
+                    aria-selected={active}
                   >
                     <div className="flex items-center gap-2 truncate">
-                      <StatusDot isOffline={option.isOffline} />
-                      {option.platform ? (
-                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#0A0A0C]">
+                      <StatusDot offline={!d.isConnected} />
+                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#0A0A0C]">
+                        {d.platform ? (
                           <PlatformIcon
-                            platform={option.platform}
+                            platform={d.platform}
                             className="w-3 h-3"
                           />
-                        </span>
-                      ) : (
-                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#0A0A0C]">
+                        ) : (
                           <svg
                             className="w-3 h-3 text-gray-400"
                             viewBox="0 0 24 24"
@@ -279,12 +159,10 @@ export const DeviceSelection: React.FC<Props> = ({
                               d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
                             />
                           </svg>
-                        </span>
-                      )}
-                      <span className="truncate">{option.label}</span>
-
-                      {/* Selected checkmark */}
-                      {selectedDevice?.deviceId === option.value && (
+                        )}
+                      </span>
+                      <span className="truncate">{d.deviceName}</span>
+                      {active && (
                         <svg
                           className="w-4 h-4 ml-auto text-blue-400"
                           viewBox="0 0 24 24"
@@ -301,7 +179,8 @@ export const DeviceSelection: React.FC<Props> = ({
                       )}
                     </div>
                   </button>
-                ))}
+                );
+              })}
             </div>
           </div>
         </div>

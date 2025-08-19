@@ -50,7 +50,7 @@ export function useActiveTab(targetDevice: Device) {
 
   const tab = useMemo(
     () => tabs.find((p) => p.id === activeId) ?? null,
-    [tabs, activeId]
+    [tabs, activeId],
   );
 
   return { activeId, setActiveId, tab, tabs };

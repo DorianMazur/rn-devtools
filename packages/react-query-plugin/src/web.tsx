@@ -1,34 +1,98 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 import {
   QueryClient,
   QueryClientProvider,
-  HydrationBoundary,
   hydrate,
-  type QueryKey,
   type DehydratedState,
+  type QueryKey,
 } from "@tanstack/react-query";
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { createWebPluginClient, Device } from "@rn-devtools/plugin-sdk";
-
-type PluginProps = {
-  targetDevice?: Device | null;
-  allDevices?: Device[];
-  isDashboardConnected: boolean;
-};
-type DevtoolsPlugin = {
-  id: string;
-  title: string;
-  Icon: React.FC<{ className?: string }>;
-  mount: React.ComponentType<PluginProps>;
-};
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 
 const PLUGIN = "react-query";
 const EVT_STATE = "state";
 const EVT_REQ = "rq.request";
 const EVT_ACTION = "rq.action";
 
-// how long to suppress the immediate fetch the panel does after setState
-const SUPPRESS_MS = 500;
+export type DevToolsActionType =
+  | "REFETCH"
+  | "INVALIDATE"
+  | "RESET"
+  | "REMOVE"
+  | "TRIGGER_ERROR"
+  | "RESTORE_ERROR"
+  | "TRIGGER_LOADING"
+  | "RESTORE_LOADING"
+  | "CLEAR_MUTATION_CACHE"
+  | "CLEAR_QUERY_CACHE"
+  | "ONLINE_ON"
+  | "ONLINE_OFF";
+
+export const DEV_TOOLS_EVENT = "@tanstack/query-devtools-event";
+
+type DevToolsEventDetail = {
+  type: DevToolsActionType;
+  queryHash?: string;
+  metadata?: Record<string, unknown>;
+};
+
+function onDevToolsEvent(
+  cb: (
+    type: DevToolsActionType,
+    queryHash?: string,
+    metadata?: Record<string, unknown>,
+  ) => void,
+) {
+  const handler = (event: Event) => {
+    const ce = event as CustomEvent<DevToolsEventDetail>;
+    const { type, queryHash, metadata } = ce.detail || {};
+    cb(type, queryHash, metadata);
+  };
+  window.addEventListener(DEV_TOOLS_EVENT, handler as EventListener);
+  return () =>
+    window.removeEventListener(DEV_TOOLS_EVENT, handler as EventListener);
+}
+
+const actionTypeToWire: Record<DevToolsActionType, string> = {
+  REFETCH: "ACTION-REFETCH",
+  INVALIDATE: "ACTION-INVALIDATE",
+  RESET: "ACTION-RESET",
+  REMOVE: "ACTION-REMOVE",
+  TRIGGER_ERROR: "ACTION-TRIGGER-ERROR",
+  RESTORE_ERROR: "ACTION-RESTORE-ERROR",
+  TRIGGER_LOADING: "ACTION-TRIGGER-LOADING",
+  RESTORE_LOADING: "ACTION-RESTORE-LOADING",
+  CLEAR_MUTATION_CACHE: "ACTION-CLEAR-MUTATION-CACHE",
+  CLEAR_QUERY_CACHE: "ACTION-CLEAR-QUERY-CACHE",
+  ONLINE_ON: "ACTION-ONLINE-MANAGER-ONLINE",
+  ONLINE_OFF: "ACTION-ONLINE-MANAGER-OFFLINE",
+};
+
+type ObserverState = { options?: any };
+type DehydratedQuery = {
+  queryKey: unknown[];
+  queryHash: string;
+  state: any;
+  observers?: ObserverState[];
+};
+type SafeDehydratedState = {
+  queries: DehydratedQuery[];
+  mutations: any[];
+};
+
+function hydrateSafe(
+  client: QueryClient,
+  state: DehydratedState | SafeDehydratedState,
+) {
+  const s = state as SafeDehydratedState;
+  s?.queries?.forEach((q) => {
+    q?.observers?.forEach((o) => {
+      if (o?.options) o.options.queryFn = undefined;
+    });
+  });
+  hydrate(client, state as any);
+}
 
 const Icon: React.FC<{ className?: string }> = ({ className }) => (
   <svg
@@ -42,264 +106,197 @@ const Icon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
-type RQActionType =
-  | "invalidate"
-  | "refetch"
-  | "reset"
-  | "remove"
-  | "cancel"
-  | "setData"
-  | "triggerLoading"
-  | "restoreLoading"
-  | "triggerError"
-  | "restoreError";
-
-type RQActionPayload = {
-  queryKey?: QueryKey;
-  exact?: boolean;
-  filters?: Record<string, unknown>;
-  value?: unknown;
+type PluginProps = {
+  targetDevice?: Device | null;
+  allDevices?: Device[];
+  isDashboardConnected: boolean;
 };
 
-type SendAction = (type: RQActionType, payload?: RQActionPayload) => void;
-
-const isObject = (v: unknown): v is Record<string, unknown> =>
-  typeof v === "object" && v !== null;
-
-/** Intercept client-level methods and emit write-through actions */
-function wireClientWriteThrough(
-  client: QueryClient,
-  sendAction: SendAction,
-  applyingRemoteRef: React.MutableRefObject<boolean>
-) {
-  const shouldEmit = () => !applyingRemoteRef.current;
-
-  const origSet = client.setQueryData.bind(client);
-  client.setQueryData = ((key, updater, opts) => {
-    const res = origSet(key, updater as never, opts as never);
-    if (shouldEmit()) {
-      try {
-        const next = client.getQueryData(key);
-        sendAction("setData", { queryKey: key, value: next });
-      } catch {
-        // ignore
-      }
-    }
-    return res;
-  }) as typeof client.setQueryData;
-
-  const origInv = client.invalidateQueries.bind(client);
-  client.invalidateQueries = (async (
-    ...args: Parameters<typeof client.invalidateQueries>
-  ) => {
-    const r = await origInv(...args);
-    if (shouldEmit()) {
-      const [filters] = args;
-      sendAction("invalidate", { ...(filters ?? {}) });
-    }
-    return r;
-  }) as typeof client.invalidateQueries;
-
-  const origRef = client.refetchQueries.bind(client);
-  client.refetchQueries = (async (
-    ...args: Parameters<typeof client.refetchQueries>
-  ) => {
-    const r = await origRef(...args);
-    if (shouldEmit()) {
-      const [filters] = args;
-      sendAction("refetch", { ...(filters ?? {}) });
-    }
-    return r;
-  }) as typeof client.refetchQueries;
-
-  const origRes = client.resetQueries.bind(client);
-  client.resetQueries = (async (
-    ...args: Parameters<typeof client.resetQueries>
-  ) => {
-    const r = await origRes(...args);
-    if (shouldEmit()) {
-      const [filters] = args;
-      sendAction("reset", { ...(filters ?? {}) });
-    }
-    return r;
-  }) as typeof client.resetQueries;
-
-  const origRem = client.removeQueries.bind(client);
-  client.removeQueries = ((
-    ...args: Parameters<typeof client.removeQueries>
-  ) => {
-    const r = origRem(...args);
-    if (shouldEmit()) {
-      const [filters] = args;
-      sendAction("remove", { ...(filters ?? {}) });
-    }
-    return r;
-  }) as typeof client.removeQueries;
-}
-
-type QueryStateLike = {
-  status?: string;
-  fetchStatus?: string;
-  fetchMeta?: unknown | null;
+type DevtoolsPlugin = {
+  id: string;
+  title: string;
+  Icon: React.FC<{ className?: string }>;
+  mount: React.ComponentType<PluginProps>;
 };
 
-type MinimalQuery = {
-  queryKey: QueryKey;
-  state: QueryStateLike;
-  options?: unknown;
-  fetch?: (opts?: unknown) => Promise<unknown> | unknown;
-  cancel?: (opts?: unknown) => Promise<unknown> | unknown;
-  setState?: (
-    updater: ((prev: QueryStateLike) => QueryStateLike) | QueryStateLike,
-    action?: unknown
-  ) => unknown;
-};
-
-const isMinimalQuery = (q: unknown): q is MinimalQuery =>
-  isObject(q) && "queryKey" in q;
-
-/** Intercept per-query ops; suppress panel’s immediate fetch after setState-derived intents */
-function wirePerQueryInterceptors(client: QueryClient, sendAction: SendAction) {
-  const cache = client.getQueryCache();
-  const seen = new WeakSet<object>();
-  const suppressUntil = new WeakMap<object, number>();
-
-  const now = () =>
-    typeof performance !== "undefined" ? performance.now() : Date.now();
-  const isSuppressed = (q: object) => {
-    const t = suppressUntil.get(q);
-    return typeof t === "number" && now() < t;
-  };
-  const suppressNextFetch = (q: object) => {
-    suppressUntil.set(q, now() + SUPPRESS_MS);
-  };
-
-  const patchQuery = (candidate: unknown) => {
-    if (!isMinimalQuery(candidate) || seen.has(candidate as object)) return;
-    const q = candidate;
-    seen.add(q as object);
-
-    const key = q.queryKey;
-
-    // Refetch (panel calls q.fetch) — we emit an action instead.
-    q.fetch = async () => {
-      if (isSuppressed(q as object)) return Promise.resolve(undefined);
-      sendAction("refetch", { queryKey: key, exact: true });
-      return Promise.resolve(undefined);
-    };
-
-    // Cancel
-    q.cancel = async () => {
-      if (!isSuppressed(q as object)) {
-        sendAction("cancel", { queryKey: key, exact: true });
-      }
-      return Promise.resolve(undefined);
-    };
-
-    // Derive intent from panel toggles
-    const origSetState = q.setState?.bind(q);
-    q.setState = (updater, action) => {
-      const prev = q.state;
-      const next =
-        typeof updater === "function"
-          ? (updater as (p: QueryStateLike) => QueryStateLike)(prev)
-          : (updater as QueryStateLike);
-
-      let derived:
-        | "triggerError"
-        | "restoreError"
-        | "triggerLoading"
-        | "restoreLoading"
-        | null = null;
-
-      if (next?.status === "error" && prev?.status !== "error") {
-        derived = "triggerError";
-      } else if (
-        (next?.status === "pending" || next?.fetchStatus === "fetching") &&
-        !(prev?.status === "pending" || prev?.fetchStatus === "fetching")
-      ) {
-        derived = "triggerLoading";
-      } else if (prev?.status === "error" && next?.status !== "error") {
-        derived = "restoreError";
-      } else if (
-        (prev?.status === "pending" || prev?.fetchStatus === "fetching") &&
-        !(next?.status === "pending" || next?.fetchStatus === "fetching")
-      ) {
-        derived = "restoreLoading";
-      }
-
-      if (derived) {
-        suppressNextFetch(q as object);
-        sendAction(derived, { queryKey: key });
-      }
-
-      return origSetState ? origSetState(updater, action) : undefined;
-    };
-  };
-
-  cache.getAll().forEach(patchQuery);
-  const unsub = cache.subscribe((evt: unknown) => {
-    if (isObject(evt) && "query" in evt) {
-      patchQuery((evt as { query?: unknown }).query);
-    }
-  });
-  return unsub;
-}
-
-const Panel: React.FC<PluginProps> = ({ targetDevice }) => {
+const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
   const deviceId =
-    (isObject(targetDevice) && typeof targetDevice.deviceId === "string"
+    (targetDevice && typeof targetDevice.deviceId === "string"
       ? targetDevice.deviceId
       : undefined) || undefined;
 
-  const [client] = React.useState(() => new QueryClient());
+  const [client] = React.useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            queryFn: () => new Promise<never>(() => {}), // inert
+            retry: false,
+            refetchOnWindowFocus: false,
+            refetchOnReconnect: false,
+            refetchOnMount: false,
+            staleTime: Infinity,
+            gcTime: Infinity,
+          },
+        },
+      }),
+  );
+
   const rq = React.useMemo(
     () => createWebPluginClient(PLUGIN, () => deviceId),
-    [deviceId]
+    [deviceId],
   );
 
   const applyingRemote = React.useRef(false);
 
-  React.useEffect(() => {
-    const sendAction: SendAction = (type, payload) => {
-      if (!deviceId) return;
-      rq.sendMessage(EVT_ACTION, { type, ...(payload || {}) }, deviceId);
-    };
-    wireClientWriteThrough(client, sendAction, applyingRemote);
-    const unsub = wirePerQueryInterceptors(client, sendAction);
-    return () => unsub?.();
-  }, [client, rq, deviceId]);
+  const lastDataForwardRef = React.useRef<
+    Map<string, { ts: number; hash: string }>
+  >(new Map());
+  const DATA_EMIT_WINDOW_MS = 200;
 
+  const sendDataUpdate = React.useCallback(
+    (queryHash: string, queryKey: unknown[], data: unknown) => {
+      if (!deviceId || !queryHash) return;
+
+      let payloadStr: string;
+      try {
+        payloadStr = JSON.stringify({ queryKey, data });
+      } catch {
+        payloadStr = Math.random().toString(36);
+      }
+      const now = Date.now();
+      const last = lastDataForwardRef.current.get(queryHash);
+      if (
+        last &&
+        last.hash === payloadStr &&
+        now - last.ts < DATA_EMIT_WINDOW_MS
+      )
+        return;
+
+      lastDataForwardRef.current.set(queryHash, { ts: now, hash: payloadStr });
+
+      rq.sendMessage(
+        EVT_ACTION,
+        {
+          action: "ACTION-DATA-UPDATE",
+          query: { queryHash, queryKey: queryKey as unknown[] },
+          data,
+        },
+        deviceId,
+      );
+    },
+    [rq, deviceId],
+  );
+
+  // Hydrate snapshots from native (imperative; no HydrationBoundary needed)
   React.useEffect(() => {
     const unsubscribe = rq.addMessageListener(
       EVT_STATE,
       (payload?: unknown) => {
         try {
-          if (
-            isObject(payload) &&
-            "dehydrated" in payload &&
-            (payload as { dehydrated?: unknown }).dehydrated
-          ) {
+          const p = payload as { dehydrated?: DehydratedState };
+          if (p && p.dehydrated) {
             applyingRemote.current = true;
-            hydrate(
-              client,
-              (payload as { dehydrated?: DehydratedState }).dehydrated!
-            );
+            hydrateSafe(client, p.dehydrated);
             applyingRemote.current = false;
           }
         } catch {
           applyingRemote.current = false;
         }
-      }
+      },
     );
-    return () => {
-      unsubscribe();
-    };
+    return () => unsubscribe();
   }, [rq, client]);
 
+  // Ask device for state when the target changes
   React.useEffect(() => {
     if (deviceId) rq.sendMessage(EVT_REQ);
   }, [rq, deviceId]);
+
+  // Forward explicit button actions from the Devtools UI
+  React.useEffect(() => {
+    const off = onDevToolsEvent((type, queryHash) => {
+      if (!deviceId) return;
+      const action = actionTypeToWire[type];
+      if (!action) return;
+
+      rq.sendMessage(
+        EVT_ACTION,
+        {
+          action,
+          query: { queryHash },
+        },
+        deviceId,
+      );
+    });
+    return () => off();
+  }, [rq, deviceId]);
+
+  // Forward panel-side data edits (reliable path)
+  React.useEffect(() => {
+    const origSet = client.setQueryData.bind(client);
+
+    (client as any).setQueryData = (
+      key: QueryKey,
+      updater: any,
+      opts?: { updatedAt?: number },
+    ) => {
+      const res = origSet(key as any, updater, opts as any);
+
+      if (applyingRemote.current || !deviceId) return res;
+
+      try {
+        const nextValue = client.getQueryData(key);
+        const q = client
+          .getQueryCache()
+          .find({ queryKey: key, exact: true }) as any;
+        const queryHash: string | undefined = q?.queryHash;
+        if (queryHash) {
+          sendDataUpdate(queryHash, key as unknown[], nextValue);
+        }
+      } catch {
+        // ignore
+      }
+
+      return res;
+    };
+
+    return () => {
+      (client as any).setQueryData = origSet;
+    };
+  }, [client, deviceId, sendDataUpdate]);
+
+  // Optional fallback: forward "manual success" cache updates
+  React.useEffect(() => {
+    const cache = client.getQueryCache() as any;
+    const off = cache.subscribe((evt: any) => {
+      if (applyingRemote.current) return;
+      if (evt?.type !== "updated") return;
+      const act = evt.action;
+      if (act?.type === "success" && act?.manual) {
+        const q = evt.query;
+        if (!q) return;
+        sendDataUpdate(q.queryHash, q.queryKey as unknown[], q?.state?.data);
+      }
+    });
+    return () => off();
+  }, [client, sendDataUpdate]);
+
+  React.useEffect(() => {
+    const cache = client.getQueryCache() as any;
+    const seen = new WeakSet<object>();
+    const patch = (q: any) => {
+      if (!q || seen.has(q)) return;
+      seen.add(q);
+      q.fetch = async () => undefined;
+      q.cancel = async () => undefined;
+    };
+    cache.getAll().forEach(patch);
+    const unsub = cache.subscribe((evt: any) => {
+      if (evt?.query) patch(evt.query);
+    });
+    return () => unsub();
+  }, [client]);
 
   return (
     <div className="space-y-3">
@@ -312,9 +309,7 @@ const Panel: React.FC<PluginProps> = ({ targetDevice }) => {
 
       <div className="rounded-lg border border-white/10 overflow-hidden">
         <QueryClientProvider client={client}>
-          <HydrationBoundary state={undefined}>
-            <ReactQueryDevtoolsPanel />
-          </HydrationBoundary>
+          <ReactQueryDevtoolsPanel />
         </QueryClientProvider>
       </div>
     </div>
@@ -325,7 +320,7 @@ export const ReactQueryPlugin: DevtoolsPlugin = {
   id: PLUGIN,
   title: "React Query",
   Icon,
-  mount: Panel,
+  mount: Tab,
 };
 
 export default ReactQueryPlugin;

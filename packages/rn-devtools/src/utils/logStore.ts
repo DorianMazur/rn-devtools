@@ -66,7 +66,7 @@ export const useLogStore = create<LogState>((set) => ({
 // Helper log functions
 export const logInfo = (
   message: string,
-  deviceInfo?: { deviceId?: string; deviceName?: string; platform?: string }
+  deviceInfo?: { deviceId?: string; deviceName?: string; platform?: string },
 ) => {
   useLogStore.getState().addLog({
     message,
@@ -77,7 +77,7 @@ export const logInfo = (
 
 export const logError = (
   message: string,
-  deviceInfo?: { deviceId?: string; deviceName?: string; platform?: string }
+  deviceInfo?: { deviceId?: string; deviceName?: string; platform?: string },
 ) => {
   useLogStore.getState().addLog({
     message,
@@ -88,7 +88,7 @@ export const logError = (
 
 export const logWarn = (
   message: string,
-  deviceInfo?: { deviceId?: string; deviceName?: string; platform?: string }
+  deviceInfo?: { deviceId?: string; deviceName?: string; platform?: string },
 ) => {
   useLogStore.getState().addLog({
     message,
@@ -99,7 +99,7 @@ export const logWarn = (
 
 export const logDebug = (
   message: string,
-  deviceInfo?: { deviceId?: string; deviceName?: string; platform?: string }
+  deviceInfo?: { deviceId?: string; deviceName?: string; platform?: string },
 ) => {
   useLogStore.getState().addLog({
     message,

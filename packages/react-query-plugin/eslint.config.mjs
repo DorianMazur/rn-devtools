@@ -41,7 +41,7 @@ const configs = [
           version: "detect",
         },
       },
-    })
+    }),
   ),
 ];
 

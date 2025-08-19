@@ -5,14 +5,14 @@ export type NativeBus = {
   sendMessage: (event: string, payload?: unknown) => void;
   addMessageListener: <T = unknown>(
     event: string,
-    cb: (payload: T) => void
+    cb: (payload: T) => void,
   ) => () => void;
 };
 
 export function createNativePluginClient(
   pluginId: string,
   socket: Socket,
-  deviceId: string
+  deviceId: string,
 ): NativeBus {
   return {
     sendMessage(event, payload) {

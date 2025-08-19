@@ -6,5 +6,5 @@ import "./index.css";
 createRoot(document.getElementById("root") as Container).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
 );

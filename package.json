@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "lint": "eslint .",
-    "lint:all": "yarn workspaces foreach -At run lint",
+    "lint:all": "yarn workspaces foreach -Apt run lint",
     "build:all": "yarn workspaces foreach -At run build"
   },
   "devDependencies": {
@@ -18,7 +18,9 @@
     "@types/react-dom": "^19.1.2",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.3.0",
+    "prettier": "^3.6.2",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.39.1"

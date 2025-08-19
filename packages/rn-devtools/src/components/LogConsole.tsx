@@ -43,7 +43,7 @@ const LogEntryItem: React.FC<LogEntryItemProps> = ({ log }) => {
         {/* Log level */}
         <span
           className={`uppercase font-bold min-w-[3rem] ${getLogLevelColor(
-            log.level
+            log.level,
           )}`}
         >
           {log.level}
@@ -85,7 +85,7 @@ export const LogConsole: React.FC<LogConsoleProps> = ({
 }) => {
   const logs = useLogStore((state: { logs: LogEntry[] }) => state.logs);
   const clearLogs = useLogStore(
-    (state: { clearLogs: () => void }) => state.clearLogs
+    (state: { clearLogs: () => void }) => state.clearLogs,
   );
   const [filter, setFilter] = useState<LogLevel | "all">("all");
   const [deviceFilter, setDeviceFilter] = useState<string>("all");
@@ -117,7 +117,7 @@ export const LogConsole: React.FC<LogConsoleProps> = ({
       const maxHeight = calculateMaxHeight();
       const newHeight = Math.max(
         200,
-        Math.min(maxHeight, startHeight + deltaY)
+        Math.min(maxHeight, startHeight + deltaY),
       );
       setHeight(newHeight);
     };
@@ -157,7 +157,7 @@ export const LogConsole: React.FC<LogConsoleProps> = ({
   useEffect(() => {
     if (deviceFilter !== "all") {
       const deviceExists = allDevices.some(
-        (device) => device.deviceId === deviceFilter
+        (device) => device.deviceId === deviceFilter,
       );
       if (!deviceExists) {
         setDeviceFilter("all");

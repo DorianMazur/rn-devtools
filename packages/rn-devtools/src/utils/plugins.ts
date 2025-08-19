@@ -1,4 +1,7 @@
-import {  DevtoolsPlugin, plugins as discovered } from "virtual:rn-devtools-plugins";
+import {
+  DevtoolsPlugin,
+  plugins as discovered,
+} from "virtual:rn-devtools-plugins";
 
 function isValid(p: any): p is DevtoolsPlugin {
   return (

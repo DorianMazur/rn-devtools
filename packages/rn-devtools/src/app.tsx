@@ -50,10 +50,10 @@ export const getPlatformBgColor = (platform: string): string => {
 
 export const Dashboard = () => {
   const [targetDevice, setTargetDevice] = useState<Device>({
-    deviceId: "Please select a device",
-    deviceName: "Please select a device",
+    deviceId: undefined,
+    deviceName: undefined,
     isConnected: false,
-    id: "Please select a device",
+    id: undefined,
   });
 
   const { allDevices, isDashboardConnected } = useConnectedUsers();
@@ -63,7 +63,7 @@ export const Dashboard = () => {
   // Find the target device
   useEffect(() => {
     const foundDevice = allDevices?.find((device) => {
-      return device.deviceId === targetDevice.deviceId;
+      return device?.deviceId === targetDevice?.deviceId;
     });
     if (!foundDevice) return;
     setTargetDevice(foundDevice);

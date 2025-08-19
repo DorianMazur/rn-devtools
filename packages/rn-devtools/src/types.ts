@@ -49,7 +49,7 @@ export interface ObserverState<
   TError = DefaultError,
   TData = TQueryFnData,
   TQueryData = TQueryFnData,
-  TQueryKey extends QueryKey = QueryKey
+  TQueryKey extends QueryKey = QueryKey,
 > {
   queryHash: string;
   options: QueryObserverOptions<
