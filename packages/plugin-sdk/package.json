@@ -2,7 +2,7 @@
   "name": "@rn-devtools/plugin-sdk",
   "author": "Dorian Mazur",
   "license": "MIT",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Plugin SDK for rn-devtools",
   "main": "dist/index.mjs",
   "types": "dist/index.d.mts",
