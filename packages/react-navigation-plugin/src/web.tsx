@@ -12,6 +12,7 @@ import type {
 
 const PLUGIN = "react-navigation";
 const EVT_STATE = "state";
+const EVT_STATE_REQUEST = "state.request";
 const EVT_NAV_INVOKE = "navigation.invoke";
 
 const Icon: React.FC<{ className?: string }> = ({ className }) => (
@@ -137,6 +138,10 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
     );
     return () => unsub();
   }, [client]);
+
+  React.useEffect(() => {
+    if (deviceId) client.sendMessage(EVT_STATE_REQUEST, {});
+  }, [client, deviceId]);
 
   // Derive UI data from device state.
   const { leaf, ancestorsRoutes } = React.useMemo(() => {

@@ -15,6 +15,7 @@ type Props = {
 
 const PLUGIN = "react-navigation";
 const EVT_STATE = "state";
+const EVT_STATE_REQUEST = "state.request";
 const EVT_NAV_INVOKE = "navigation.invoke";
 
 type NavInvokePayload =
@@ -43,20 +44,18 @@ export function useReactNavigationDevtools({
   useReduxDevToolsExtension(navigationRef);
 
   const clientRef = React.useRef(
-    createNativePluginClient(PLUGIN, socket, deviceId),
+    createNativePluginClient(PLUGIN, socket, deviceId)
   );
   const client = clientRef.current;
 
-  React.useEffect(() => {
-    const send = () => {
-      const state = navigationRef.current?.getRootState?.();
-      if (state) {
-        client.sendMessage(EVT_STATE, { state });
-      }
-    };
+  const sendState = React.useCallback(() => {
+    const state = navigationRef.current?.getRootState?.();
+    if (state) client.sendMessage(EVT_STATE, { state });
+  }, [client, navigationRef]);
 
-    const unsub = navigationRef.current?.addListener?.("state", send);
-    const t = setTimeout(send, 0);
+  React.useEffect(() => {
+    const unsub = navigationRef.current?.addListener?.(EVT_STATE, sendState);
+    const t = setTimeout(sendState, 0);
     return () => {
       unsub?.();
       clearTimeout(t);
@@ -98,11 +97,15 @@ export function useReactNavigationDevtools({
           default:
             return undefined;
         }
-      },
+      }
     );
+    const unsubReq = client.addMessageListener(EVT_STATE_REQUEST, sendState);
+    const t = setTimeout(sendState, 0);
 
     return () => {
       unsubscribe();
+      unsubReq();
+      clearTimeout(t);
     };
   }, [client, navigationRef]);
 }
