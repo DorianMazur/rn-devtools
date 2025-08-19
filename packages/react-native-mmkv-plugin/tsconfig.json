@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "target": "ES2021",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "declaration": true,
+    "baseUrl": ".",
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}

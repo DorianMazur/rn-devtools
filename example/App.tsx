@@ -20,6 +20,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useReactNativeDevtools } from "rn-devtools";
 import { useReactNavigationDevtools } from "@rn-devtools/react-navigation-plugin/native";
 import { useReactQueryDevtools } from "@rn-devtools/react-query-plugin/native";
+import { useMMKVDevtools } from "@rn-devtools/react-native-mmkv-plugin/native";
 import { MMKV } from "react-native-mmkv";
 
 import {
@@ -29,9 +30,6 @@ import {
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-// ---------------------------
-// Types
-// ---------------------------
 type JsonApiList<T> = {
   data: Array<{ id: string; type: string; attributes: T }>;
   links?: { self?: string; next?: string | null; current?: string };
@@ -55,9 +53,6 @@ type Fact = {
   body: string;
 };
 
-// ---------------------------
-// API helpers
-// ---------------------------
 const API_BASE = "https://dogapi.dog/api/v2";
 
 async function fetchJson<T>(url: string, signal?: AbortSignal): Promise<T> {
@@ -97,24 +92,11 @@ function fetchRandomFact({ signal }: { signal?: AbortSignal }) {
   return fetchJson<JsonApiList<Fact>>(url, signal);
 }
 
-// ---------------------------
-// MMKV setup
-// ---------------------------
 export const storage = new MMKV({ id: "devtools-mmkv" });
 
-declare global {
-  // Expose storage for your devtools or quick inspection
-  // (e.g. evaluate globalThis.__MMKV__.getAllKeys())
-  var __MMKV__: MMKV | undefined;
-}
-
-globalThis.__MMKV__ = storage;
-
-// Small helper to convert unknown value to a printable form
 function readAny(key: string): string | number | boolean | null {
-  // Try all types; MMKV stores typed values separately
   const str = storage.getString(key);
-  if (typeof str === "string") return str;
+  if (typeof str === "string" && str.length > 0) return str;
   const num = storage.getNumber(key);
   if (typeof num === "number") return num;
   const bool = storage.getBoolean?.(key as any);
@@ -122,83 +104,6 @@ function readAny(key: string): string | number | boolean | null {
   return null;
 }
 
-// Wire MMKV to rn-devtools via your socket
-function useMMKVDevtools({
-  socket,
-  deviceId,
-  namespace = "plugin:mmkv",
-}: {
-  socket: any;
-  deviceId: string;
-  namespace?: string;
-}) {
-  useEffect(() => {
-    if (!socket) return;
-
-    const snapshot = () => {
-      const keys = storage.getAllKeys();
-      const data: Record<string, string | number | boolean | null> = {};
-      for (const k of keys) data[k] = readAny(k);
-      socket.emit(`${namespace}/snapshot`, { deviceId, keys, data });
-    };
-
-    // initial state
-    snapshot();
-
-    // listen to changes from app-side
-    const sub = storage.addOnValueChangedListener((key) => {
-      socket.emit(`${namespace}/change`, {
-        deviceId,
-        key,
-        value: readAny(key),
-      });
-    });
-
-    // allow devtools to control storage
-    const onGet = ({ key }: { key: string }) =>
-      socket.emit(`${namespace}/value`, {
-        deviceId,
-        key,
-        value: readAny(key),
-      });
-
-    const onSet = ({ key, value }: { key: string; value: any }) => {
-      // Try to preserve primitive type
-      if (typeof value === "string") storage.set(key, value);
-      else if (typeof value === "number") storage.set(key, value);
-      else if (typeof value === "boolean") storage.set(key, value);
-      else storage.set(key, JSON.stringify(value));
-      snapshot();
-    };
-
-    const onRemove = ({ key }: { key: string }) => {
-      storage.delete(key);
-      snapshot();
-    };
-
-    const onClear = () => {
-      for (const k of storage.getAllKeys()) storage.delete(k);
-      snapshot();
-    };
-
-    socket.on(`${namespace}/get`, onGet);
-    socket.on(`${namespace}/set`, onSet);
-    socket.on(`${namespace}/remove`, onRemove);
-    socket.on(`${namespace}/clear`, onClear);
-
-    return () => {
-      sub.remove();
-      socket.off(`${namespace}/get`, onGet);
-      socket.off(`${namespace}/set`, onSet);
-      socket.off(`${namespace}/remove`, onRemove);
-      socket.off(`${namespace}/clear`, onClear);
-    };
-  }, [socket, deviceId, namespace]);
-}
-
-// ---------------------------
-// UI Components
-// ---------------------------
 function FactCard() {
   const { data, isLoading, isError, refetch, isRefetching } = useQuery({
     queryKey: ["fact"],
@@ -236,7 +141,7 @@ function FactCard() {
 }
 
 function KeyValue({ label, value }: { label: string; value?: string }) {
-  if (!value) return null;
+  if (value == null) return null;
   return (
     <View style={styles.kvRow}>
       <Text style={styles.kvLabel}>{label}</Text>
@@ -425,9 +330,6 @@ function BreedDetailsScreen({
   );
 }
 
-// ---------------------------
-// MMKV Playground Card (for manual testing)
-// ---------------------------
 function MMKVPlayground() {
   const [keyName, setKeyName] = useState<string>("greeting");
   const [stringValue, setStringValue] = useState<string>("Hello 🐶");
@@ -576,23 +478,16 @@ function MMKVPlayground() {
       {keys.length === 0 ? (
         <Text style={styles.rowSubtle}>No keys yet. Add some above.</Text>
       ) : (
-        <FlatList
-          data={keys}
-          keyExtractor={(k) => k}
-          renderItem={({ item }) => (
-            <Pressable
-              onPress={() => setSelectedKey(item)}
-              style={({ pressed }) => [
-                styles.row,
-                pressed && styles.rowPressed,
-              ]}
-            >
-              <Text style={styles.rowTitle}>{item}</Text>
-              <Text style={styles.rowSubtle}>Tap to select</Text>
-            </Pressable>
-          )}
-          style={{ maxHeight: 180 }}
-        />
+        keys.map((item) => (
+          <Pressable
+            key={item}
+            onPress={() => setSelectedKey(item)}
+            style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+          >
+            <Text style={styles.rowTitle}>{item}</Text>
+            <Text style={styles.rowSubtle}>Tap to select</Text>
+          </Pressable>
+        ))
       )}
 
       {selectedKey && (
@@ -658,9 +553,7 @@ export default function App() {
         socket,
         deviceId,
       });
-
-      // 👇 Add your MMKV tab wiring
-      useMMKVDevtools({ socket, deviceId, namespace: "plugin:mmkv" });
+      useMMKVDevtools({ socket, deviceId, storages: [storage] });
     },
   });
 
@@ -691,9 +584,6 @@ export default function App() {
   );
 }
 
-// ---------------------------
-// Styles
-// ---------------------------
 const styles = StyleSheet.create({
   container: {
     flex: 1,

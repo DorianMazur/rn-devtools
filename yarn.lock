@@ -2864,6 +2864,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rn-devtools/react-native-mmkv-plugin@workspace:*, @rn-devtools/react-native-mmkv-plugin@workspace:packages/react-native-mmkv-plugin":
+  version: 0.0.0-use.local
+  resolution: "@rn-devtools/react-native-mmkv-plugin@workspace:packages/react-native-mmkv-plugin"
+  dependencies:
+    "@rn-devtools/plugin-sdk": "workspace:*"
+    "@typescript-eslint/eslint-plugin": "npm:^8.20.0"
+    "@typescript-eslint/parser": "npm:^8.20.0"
+    eslint: "npm:^9.4.0"
+    eslint-plugin-react: "npm:7.37.5"
+    react: "npm:19.1.0"
+    react-dom: "npm:19.1.0"
+    react-native-mmkv: "patch:react-native-mmkv@npm%3A3.3.0#~/.yarn/patches/react-native-mmkv-npm-3.3.0-27a8e718b6.patch"
+    socket.io-client: "npm:^4.8.1"
+    tsup: "npm:^8.5.0"
+    typescript: "npm:^5.8.3"
+  peerDependencies:
+    react: ">=18"
+    react-dom: ">=18"
+    react-native-mmkv: 3
+    socket.io-client: 4
+  languageName: unknown
+  linkType: soft
+
 "@rn-devtools/react-navigation-plugin@workspace:*, @rn-devtools/react-navigation-plugin@workspace:packages/react-navigation-plugin":
   version: 0.0.0-use.local
   resolution: "@rn-devtools/react-navigation-plugin@workspace:packages/react-navigation-plugin"
@@ -3905,6 +3928,7 @@ __metadata:
     "@react-native/typescript-config": "npm:0.81.0"
     "@react-navigation/native": "npm:^7.1.17"
     "@react-navigation/native-stack": "npm:^7.3.25"
+    "@rn-devtools/react-native-mmkv-plugin": "workspace:*"
     "@rn-devtools/react-navigation-plugin": "workspace:*"
     "@rn-devtools/react-query-plugin": "workspace:*"
     "@rnx-kit/metro-config": "npm:^2.1.0"
