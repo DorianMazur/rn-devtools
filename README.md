@@ -3,9 +3,7 @@
 Sleek, extensible devtools for React Native.
 Add tabs as npm plugins!
 
-![alt text](https://github.com/DorianMazur/rn-devtools/raw/main/react-query-plugin.gif "React Query Plugin")
-
-![alt text](https://github.com/DorianMazur/rn-devtools/raw/main/navigation-plugin.gif "Navigation Plugin")
+![alt text](https://github.com/DorianMazur/rn-devtools/raw/main/preview.gif "React Native Devtools preview")
 
 ## ✨ Highlights
 
@@ -24,7 +22,10 @@ Add tabs as npm plugins!
 
 ```bash
 yarn add rn-devtools
-yarn add @rn-devtools/react-query-plugin @rn-devtools/react-navigation-plugin
+# (Optional) Install plugins
+yarn add @rn-devtools/react-query-plugin @rn-devtools/react-navigation-plugin @rn-devtools/react-native-mmkv-plugin/native
+# (Optional)Install plugin-sdk
+yarn add @rn-devtools/plugin-sdk
 ```
 
 2. Tell the web app which plugins to load
@@ -36,6 +37,7 @@ module.exports = {
   plugins: [
     "@rn-devtools/react-query-plugin",
     "@rn-devtools/react-navigation-plugin",
+    "@rn-devtools/react-native-mmkv-plugin/native"
   ],
 };
 ```
@@ -53,6 +55,7 @@ rn-devtools
 import { useReactNativeDevtools } from "rn-devtools";
 import { useReactQueryDevtools } from "@rn-devtools/react-query-plugin/native";
 import { useReactNavigationDevtools } from "@rn-devtools/react-navigation-plugin/native";
+import { seMMKVDevtools } from "@rn-devtools/react-native-mmkv-plugin/native";
 
 function App() {
   // your app setup…
@@ -64,6 +67,7 @@ function App() {
     plugins: ({ socket, deviceId }) => {
       useReactQueryDevtools({ queryClient, socket, deviceId });
       useReactNavigationDevtools({ navigationRef, socket, deviceId });
+      useMMKVDevtools({ storages: [storage], socket, deviceId, });
     },
   });
 
