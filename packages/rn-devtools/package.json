@@ -3,16 +3,7 @@
   "version": "0.0.1",
   "description": "React Native DevTools",
   "type": "module",
-  "main": "./dist/native/index.js",
-  "types": "./dist/native/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/native/index.js",
-      "types": "./dist/native/index.d.ts"
-    }
-  },
   "files": [
-    "dist",
     "bin",
     "src",
     "public",
@@ -27,35 +18,21 @@
     "lint:eslint:fix": "eslint . --fix",
     "lint:tsc": "tsc --noEmit",
     "lint": "yarn lint:eslint && yarn lint:tsc",
-    "build:web": "vite build",
-    "build:cli": "tsup --config=./tsup.cli.config.ts",
-    "build:native": "tsup --config=./tsup.native.config.ts",
-    "build": "yarn build:web && yarn build:cli && yarn build:native"
+    "build": "tsup --config=./tsup.config.ts"
   },
   "bin": "./bin/index.js",
   "dependencies": {
-    "@react-router/node": "^7.7.1",
-    "@react-router/serve": "^7.7.1",
-    "@tanstack/react-query": "^5.85.3",
-    "@tanstack/react-query-devtools": "^5.85.3",
-    "isbot": "^5.1.27",
+    "@tailwindcss/vite": "^4.1.4",
     "open": "^10.2.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-router": "^7.7.1",
     "socket.io": "^4.7.2",
-    "socket.io-client": "4.8.1",
-    "zustand": "5.0.7"
-  },
-  "devDependencies": {
-    "@tailwindcss/vite": "^4.1.4",
-    "eslint": "^9.4.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-react": "7.37.5",
+    "socket.io-client": "^4.8.1",
     "tailwindcss": "^4.1.4",
-    "tsup": "^8.5.0",
-    "typescript": "^5.8.3",
     "vite": "^6.3.3",
     "vite-tsconfig-paths": "^5.1.4"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

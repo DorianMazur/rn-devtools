@@ -17,7 +17,7 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useReactNativeDevtools } from "rn-devtools";
+import { useReactNativeDevtools } from "@rn-devtools/plugin-sdk";
 import { useReactNavigationDevtools } from "@rn-devtools/react-navigation-plugin/native";
 import { useReactQueryDevtools } from "@rn-devtools/react-query-plugin/native";
 import { useMMKVDevtools } from "@rn-devtools/react-native-mmkv-plugin/native";
@@ -63,7 +63,7 @@ async function fetchJson<T>(url: string, signal?: AbortSignal): Promise<T> {
   if (!res.ok) {
     const text = await res.text();
     throw new Error(
-      `Request failed (${res.status}): ${text || res.statusText}`
+      `Request failed (${res.status}): ${text || res.statusText}`,
     );
   }
   return res.json() as Promise<T>;
@@ -192,7 +192,7 @@ function BreedsList({
   const breeds = React.useMemo(() => {
     const list =
       data?.pages.flatMap((p) =>
-        p.data.map((x) => ({ id: x.id, ...x.attributes }))
+        p.data.map((x) => ({ id: x.id, ...x.attributes })),
       ) ?? [];
     if (!search.trim()) return list;
     const q = search.toLowerCase();
@@ -340,7 +340,7 @@ function MMKVPlayground() {
 
   useEffect(() => {
     const sub = storage.addOnValueChangedListener(() =>
-      setKeys(storage.getAllKeys())
+      setKeys(storage.getAllKeys()),
     );
     return () => sub.remove();
   }, []);
@@ -537,7 +537,7 @@ export default function App() {
           },
         },
       }),
-    []
+    [],
   );
 
   useReactNativeDevtools({

@@ -9,5 +9,5 @@
     "allowJs": false,
     "outDir": "dist"
   },
-  "include": ["cli", "src", "native", "tsup.*.config.ts", "vite.config.ts"]
+  "include": ["cli", "src", "native", "tsup.*.config.ts", "vite.config.ts", "tsup.config.ts"]
 }
