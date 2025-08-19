@@ -1,8 +1,19 @@
 {
   "name": "@rn-devtools/plugin-sdk",
-  "author": "Dorian Mazur",
+  "author": {
+    "name": "Dorian Mazur",
+    "email": "mazur.dorian15@gmail.com"
+  },
+  "homepage": "https://github.com/DorianMazur/rn-devtools",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/DorianMazur/rn-devtools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DorianMazur/rn-devtools/issues"
+  },
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Plugin SDK for rn-devtools",
   "main": "dist/index.mjs",
   "types": "dist/index.d.mts",
@@ -16,12 +27,20 @@
     "dist",
     "package.json"
   ],
+  "keywords": [
+    "react native devtools",
+    "mobile",
+    "devtools",
+    "rn-devtools",
+    "react-native"
+  ],
   "scripts": {
     "lint:eslint": "eslint .",
     "lint:eslint:fix": "eslint . --fix",
     "lint:tsc": "tsc --noEmit",
     "lint": "yarn lint:eslint && yarn lint:tsc",
-    "build": "tsup src/index.ts --format esm --dts --clean --external react --external react-dom --external socket.io-client"
+    "build": "tsup src/index.ts --format esm --dts --clean --external react --external react-dom --external socket.io-client",
+    "publish": "npm publish --access public"
   },
   "dependencies": {
     "socket.io-client": "^4.8.1"
