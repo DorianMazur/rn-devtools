@@ -31,13 +31,13 @@
     "build": "tsup src/web.tsx src/native.ts --format esm --dts --clean --external react --external react-dom --external socket.io-client"
   },
   "dependencies": {
+    "@rn-devtools/plugin-sdk": "workspace:*",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native-mmkv": "patch:react-native-mmkv@npm%3A3.3.0#~/.yarn/patches/react-native-mmkv-npm-3.3.0-27a8e718b6.patch",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
-    "@rn-devtools/plugin-sdk": "workspace:*",
     "@typescript-eslint/eslint-plugin": "^8.20.0",
     "@typescript-eslint/parser": "^8.20.0",
     "eslint": "^9.4.0",

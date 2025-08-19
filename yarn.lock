@@ -3928,6 +3928,7 @@ __metadata:
     "@react-native/typescript-config": "npm:0.81.0"
     "@react-navigation/native": "npm:^7.1.17"
     "@react-navigation/native-stack": "npm:^7.3.25"
+    "@rn-devtools/plugin-sdk": "workspace:*"
     "@rn-devtools/react-native-mmkv-plugin": "workspace:*"
     "@rn-devtools/react-navigation-plugin": "workspace:*"
     "@rn-devtools/react-query-plugin": "workspace:*"

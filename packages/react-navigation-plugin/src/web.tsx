@@ -207,7 +207,7 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
       </div>
 
       {!deviceState ? (
-        <div className="text-sm text-amber-300/90 bg-amber-900/20 border border-amber-800/40 rounded-md px-3 py-2">
+        <div className="text-sm text-gray-400">
           Waiting for navigation state…
         </div>
       ) : (

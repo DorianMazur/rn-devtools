@@ -33,6 +33,7 @@
     "@react-native/eslint-config": "0.81.0",
     "@react-native/metro-config": "0.81.0",
     "@react-native/typescript-config": "0.81.0",
+    "@rn-devtools/plugin-sdk": "workspace:*",
     "@rn-devtools/react-native-mmkv-plugin": "workspace:*",
     "@rn-devtools/react-navigation-plugin": "workspace:*",
     "@rn-devtools/react-query-plugin": "workspace:*",
