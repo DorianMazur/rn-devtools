@@ -11,6 +11,17 @@
       "types": "./dist/native/index.d.ts"
     }
   },
+  "files": [
+    "dist",
+    "bin",
+    "src",
+    "public",
+    "package.json",
+    "README.md",
+    "vite.config.ts",
+    "tsconfig.json",
+    "index.html"
+  ],
   "scripts": {
     "lint:eslint": "eslint .",
     "lint:eslint:fix": "eslint . --fix",
