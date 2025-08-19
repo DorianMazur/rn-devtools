@@ -173,7 +173,10 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
       )
         return;
 
-      lastDataForwardRef.current.set(queryHash, { ts: now, hash: payloadStr });
+      lastDataForwardRef.current.set(queryHash, {
+        ts: now,
+        hash: payloadStr,
+      });
 
       rq.sendMessage(
         EVT_ACTION,

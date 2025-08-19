@@ -126,7 +126,7 @@ export function useReactQueryDevtools({
   throttleMs = 500,
 }: Props) {
   const clientRef = React.useRef(
-    createNativePluginClient(PLUGIN, socket, deviceId)
+    createNativePluginClient(PLUGIN, socket, deviceId),
   );
   const client = clientRef.current;
 
@@ -146,7 +146,7 @@ export function useReactQueryDevtools({
   const getByHash = React.useCallback(
     (hash?: string) =>
       hash ? queryClient.getQueryCache().get(hash) : undefined,
-    [queryClient]
+    [queryClient],
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -264,7 +264,9 @@ export function useReactQueryDevtools({
                 data: undefined,
                 status: "pending",
                 fetchStatus: "fetching",
-                fetchMeta: { ...(activeQuery.state.fetchMeta || {}) },
+                fetchMeta: {
+                  ...(activeQuery.state.fetchMeta || {}),
+                },
               });
               break;
 
@@ -317,7 +319,9 @@ export function useReactQueryDevtools({
                 error: new Error("Forced error from devtools"),
                 fetchStatus: "idle",
                 data: activeQuery.state.data,
-                fetchMeta: { ...(activeQuery.state.fetchMeta || {}) },
+                fetchMeta: {
+                  ...(activeQuery.state.fetchMeta || {}),
+                },
               });
               break;
 
@@ -365,7 +369,7 @@ export function useReactQueryDevtools({
 
           sendSnapshot();
         } catch {}
-      }
+      },
     );
 
     return () => {

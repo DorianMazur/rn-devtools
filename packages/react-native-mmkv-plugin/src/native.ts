@@ -1,5 +1,4 @@
 import * as React from "react";
-import type { Socket } from "socket.io-client";
 import {
   createNativePluginClient,
   NativeHookProps,
@@ -50,10 +49,7 @@ function readKey(mmkv: MMKV, key: string): WireValue {
   const b = mmkv.getBoolean(key);
   if (b !== undefined) return { type: "boolean", value: b };
 
-  const buf = (mmkv as any).getBuffer?.(key) as
-    | Uint8Array
-    | ArrayBuffer
-    | undefined;
+  const buf = mmkv.getBuffer?.(key) as Uint8Array | ArrayBuffer | undefined;
   if (buf) return { type: "buffer", valueBytes: toBytes(buf) };
 
   return { type: "undefined" };
@@ -72,7 +68,7 @@ function writeKey(mmkv: MMKV, key: string, v: WireValue) {
       break;
     case "buffer": {
       const u8 = new Uint8Array(v.valueBytes);
-      (mmkv as any).set?.(key, u8) ?? mmkv.set(key, u8.buffer);
+      mmkv.set(key, u8);
       break;
     }
     case "undefined":
@@ -82,8 +78,9 @@ function writeKey(mmkv: MMKV, key: string, v: WireValue) {
 }
 
 function defaultGetId(mmkv: MMKV, index: number) {
-  const any = mmkv as any;
-  return String(any.id ?? any.getId?.() ?? `mmkv[${index}]`);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  return String(mmkv?.id ?? `mmkv[${index}]`);
 }
 
 export function useMMKVDevtools({
@@ -93,13 +90,13 @@ export function useMMKVDevtools({
   getInstanceId = defaultGetId,
 }: Props) {
   const clientRef = React.useRef(
-    createNativePluginClient(PLUGIN, socket, deviceId)
+    createNativePluginClient(PLUGIN, socket, deviceId),
   );
   const client = clientRef.current;
 
   const pairs = React.useMemo(
     () => storages.map((mmkv, i) => ({ id: getInstanceId(mmkv, i), mmkv })),
-    [storages, getInstanceId]
+    [storages, getInstanceId],
   );
 
   const snapshot = React.useCallback(
@@ -110,7 +107,7 @@ export function useMMKVDevtools({
       for (const k of keys) values[k] = readKey(mmkv, k);
       client.sendMessage(EVT_SNAPSHOT, { instanceId: id, values });
     },
-    [client]
+    [client],
   );
 
   React.useEffect(() => {
@@ -127,7 +124,7 @@ export function useMMKVDevtools({
         } else {
           for (const p of pairs) snapshot(p);
         }
-      }
+      },
     );
 
     const unsubMut = client.addMessageListener(
@@ -142,7 +139,7 @@ export function useMMKVDevtools({
           else if (op.op === "clearAll") p.mmkv.clearAll();
         }
         snapshot(p);
-      }
+      },
     );
 
     const subs = pairs.map(({ id, mmkv }) =>
@@ -152,7 +149,7 @@ export function useMMKVDevtools({
           key: changedKey,
           value: readKey(mmkv, changedKey),
         });
-      })
+      }),
     );
 
     // Initial snapshot

@@ -80,11 +80,11 @@ function toDisplay(v: WireValue) {
   }
 }
 
-/** ---- Child component holds its own hooks (safe) ---- */
 type InstanceCardProps = {
   inst: InstanceState;
   refresh: (id?: string) => void;
   clearAll: (id: string) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mutate: (id: string, ops: any[]) => void;
   startEdit: (id: string, key: string) => void;
   cancelEdit: (id: string, key: string) => void;
@@ -107,7 +107,7 @@ const InstanceCard: React.FC<InstanceCardProps> = ({
   const numRefs = React.useRef<Record<string, HTMLInputElement | null>>({});
   const rows = React.useMemo(
     () => Object.values(inst.rows).sort((a, b) => a.key.localeCompare(b.key)),
-    [inst.rows]
+    [inst.rows],
   );
 
   return (
@@ -189,7 +189,9 @@ const InstanceCard: React.FC<InstanceCardProps> = ({
                   ) : type === "string" ? (
                     <input
                       className="w-full bg-[#0d0e10] border border-[#2D2D2F]/60 rounded px-2 py-1 text-sm font-mono text-gray-100 placeholder-gray-500"
-                      value={(r.dirty as any).value ?? ""}
+                      value={
+                        r.dirty?.type === "string" ? (r.dirty?.value ?? "") : ""
+                      }
                       onChange={(e) => {
                         const next = e.currentTarget.value;
                         setDirty(inst.id, r.key, () => ({
@@ -205,9 +207,9 @@ const InstanceCard: React.FC<InstanceCardProps> = ({
                       className="w-48 bg-[#0d0e10] border border-[#2D2D2F]/60 rounded px-2 py-1 text-sm font-mono text-gray-100 placeholder-gray-500"
                       defaultValue={
                         r.dirty?.type === "number"
-                          ? String((r.dirty as any).value ?? "")
+                          ? String(r.dirty.value ?? "")
                           : r.value.type === "number"
-                            ? String((r.value as any).value ?? "")
+                            ? String(r.value.value ?? "")
                             : ""
                       }
                       ref={(el) => {
@@ -219,7 +221,11 @@ const InstanceCard: React.FC<InstanceCardProps> = ({
                       <input
                         type="checkbox"
                         className="mr-2"
-                        checked={(r.dirty as any).value ?? false}
+                        checked={
+                          r.dirty?.type === "boolean"
+                            ? (r.dirty?.value ?? false)
+                            : false
+                        }
                         onChange={(e) => {
                           const checked = e.currentTarget.checked;
                           setDirty(inst.id, r.key, () => ({
@@ -228,13 +234,17 @@ const InstanceCard: React.FC<InstanceCardProps> = ({
                           }));
                         }}
                       />
-                      {(r.dirty as any).value ? "true" : "false"}
+                      {r.dirty?.type === "boolean" && r.dirty?.value
+                        ? "true"
+                        : "false"}
                     </label>
                   ) : type === "buffer" ? (
                     <input
                       className="w-full bg-[#0d0e10] border border-[#2D2D2F]/60 rounded px-2 py-1 text-sm font-mono text-gray-100 placeholder-gray-500"
                       placeholder="hex bytes, e.g. 01 0a ff"
-                      value={bytesToHex((r.dirty as any).valueBytes ?? [])}
+                      value={bytesToHex(
+                        r.dirty?.type === "buffer" ? r.dirty?.valueBytes : [],
+                      )}
                       onChange={(e) => {
                         const next = e.currentTarget.value;
                         setDirty(inst.id, r.key, () => ({
@@ -293,7 +303,7 @@ const InstanceCard: React.FC<InstanceCardProps> = ({
                           commitRow(
                             inst.id,
                             r.key,
-                            numRefs.current[r.key]?.value
+                            numRefs.current[r.key]?.value,
                           )
                         }
                         className="text-xs px-2 py-1 rounded-md border border-green-900 text-green-300 hover:bg-green-950/40"
@@ -323,7 +333,7 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
   const deviceId = targetDevice?.deviceId;
   const client = React.useMemo(
     () => createWebPluginClient(PLUGIN, () => deviceId),
-    [deviceId]
+    [deviceId],
   );
   const lastCfgRef = React.useRef<string>("");
   const [instances, setInstances] = React.useState<
@@ -334,7 +344,7 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
     setInstances((prev) =>
       prev[id]
         ? prev
-        : { ...prev, [id]: { id, watchAll: true, keysFilter: [], rows: {} } }
+        : { ...prev, [id]: { id, watchAll: true, keysFilter: [], rows: {} } },
     );
   }, []);
 
@@ -366,7 +376,7 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
           }
           return { ...prev, [instanceId]: { ...inst, rows: nextRows } };
         });
-      }
+      },
     );
 
     const unsubChange = client.addMessageListener(
@@ -391,7 +401,7 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
           }
           return { ...prev, [payload.instanceId]: { ...inst, rows: nextRows } };
         });
-      }
+      },
     );
 
     client.sendMessage(EVT_REQUEST_SNAPSHOT, {});
@@ -415,12 +425,13 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
   const refresh = React.useCallback(
     (id?: string) =>
       client.sendMessage(EVT_REQUEST_SNAPSHOT, id ? { instanceId: id } : {}),
-    [client]
+    [client],
   );
   const mutate = React.useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (instanceId: string, ops: any[]) =>
       client.sendMessage(EVT_MUTATE, { instanceId, ops }),
-    [client]
+    [client],
   );
 
   const startEdit = (id: string, key: string) =>
@@ -451,7 +462,7 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
   const setDirty = (
     id: string,
     key: string,
-    updater: (v: WireValue) => WireValue
+    updater: (v: WireValue) => WireValue,
   ) =>
     setInstances((prev) => {
       const inst = prev[id];
@@ -494,7 +505,7 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
 
   const instList = React.useMemo(
     () => Object.values(instances).sort((a, b) => a.id.localeCompare(b.id)),
-    [instances]
+    [instances],
   );
 
   return (

@@ -27,7 +27,7 @@ const Icon: React.FC<{ className?: string }> = ({ className }) => (
 function formatParamsShort(params?: unknown) {
   if (!params || typeof params !== "object") return "";
   const entries = Object.entries(params as Record<string, unknown>).filter(
-    ([, v]) => v !== undefined
+    ([, v]) => v !== undefined,
   );
   if (!entries.length) return "";
   const toText = (v: unknown) =>
@@ -81,8 +81,8 @@ function getFocusedChain(root?: NavigationState) {
 function updateFocusedLeaf(
   root: NavigationState,
   updater: (
-    leaf: NavigationState
-  ) => NavigationState | PartialState<NavigationState>
+    leaf: NavigationState,
+  ) => NavigationState | PartialState<NavigationState>,
 ): NavigationState | PartialState<NavigationState> {
   const idx = typeof root.index === "number" ? root.index : 0;
   const focused = root.routes[idx];
@@ -91,7 +91,7 @@ function updateFocusedLeaf(
   if (child) {
     const newChild = updateFocusedLeaf(child, updater);
     const newRoutes = root.routes.map((route, i) =>
-      i === idx ? { ...route, state: newChild } : route
+      i === idx ? { ...route, state: newChild } : route,
     );
     return { ...root, routes: newRoutes };
   }
@@ -103,7 +103,7 @@ function updateFocusedLeaf(
 /** Build a minimal reset object that keeps all ancestors intact but replaces leaf's routes/index. */
 function buildResetForLeaf(
   root: NavigationState,
-  nextLeaf: { index: number; routes: Array<{ name: string; params?: object }> }
+  nextLeaf: { index: number; routes: Array<{ name: string; params?: object }> },
 ) {
   return updateFocusedLeaf(root, (leaf) => {
     // Keep any extra properties on leaf (type, stale, etc.) if present, but swap routes/index.
@@ -121,11 +121,11 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
   const deviceId = targetDevice?.deviceId;
   const client = React.useMemo(
     () => createWebPluginClient(PLUGIN, () => deviceId),
-    [deviceId]
+    [deviceId],
   );
 
   const [deviceState, setDeviceState] = React.useState<NavigationState | null>(
-    null
+    null,
   );
 
   React.useEffect(() => {
@@ -134,7 +134,7 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
       (payload?: { state: NavigationState }) => {
         // Always keep the latest full state from the device.
         if (payload?.state) setDeviceState(payload.state);
-      }
+      },
     );
     return () => unsub();
   }, [client]);
@@ -175,7 +175,7 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
         args: [next],
       });
     },
-    [client, deviceState, leaf]
+    [client, deviceState, leaf],
   );
 
   const trimTo = React.useCallback(
@@ -183,7 +183,7 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
       const nextRoutes = stackRoutes.slice(0, i + 1);
       sendResetWithLeaf(i, nextRoutes);
     },
-    [sendResetWithLeaf, stackRoutes]
+    [sendResetWithLeaf, stackRoutes],
   );
 
   const removeAt = React.useCallback(
@@ -196,7 +196,7 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
         nextIndex = Math.min(i, nextRoutes.length - 1);
       sendResetWithLeaf(nextIndex, nextRoutes);
     },
-    [activeIndex, sendResetWithLeaf, stackRoutes]
+    [activeIndex, sendResetWithLeaf, stackRoutes],
   );
 
   return (
