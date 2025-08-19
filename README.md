@@ -21,11 +21,9 @@ Add tabs as npm plugins!
 1. Install (in your RN app)
 
 ```bash
-yarn add rn-devtools
+yarn add -D rn-devtools
 # (Optional) Install plugins
-yarn add @rn-devtools/react-query-plugin @rn-devtools/react-navigation-plugin @rn-devtools/react-native-mmkv-plugin/native
-# (Optional)Install plugin-sdk
-yarn add @rn-devtools/plugin-sdk
+yarn add -D @rn-devtools/react-query-plugin @rn-devtools/react-navigation-plugin @rn-devtools/react-native-mmkv-plugin
 ```
 
 2. Tell the web app which plugins to load
@@ -37,7 +35,7 @@ module.exports = {
   plugins: [
     "@rn-devtools/react-query-plugin",
     "@rn-devtools/react-navigation-plugin",
-    "@rn-devtools/react-native-mmkv-plugin/native"
+    "@rn-devtools/react-native-mmkv-plugin"
   ],
 };
 ```
