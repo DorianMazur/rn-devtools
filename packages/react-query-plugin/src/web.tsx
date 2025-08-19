@@ -120,10 +120,7 @@ type DevtoolsPlugin = {
 };
 
 const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
-  const deviceId =
-    (targetDevice && typeof targetDevice.deviceId === "string"
-      ? targetDevice.deviceId
-      : undefined) || undefined;
+  const deviceId = targetDevice?.deviceId;
 
   const [client] = React.useState(
     () =>
@@ -213,7 +210,7 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
 
   // Ask device for state when the target changes
   React.useEffect(() => {
-    if (deviceId) rq.sendMessage(EVT_REQ);
+    if (deviceId) rq.sendMessage(EVT_REQ, {}, deviceId);
   }, [rq, deviceId]);
 
   // Forward explicit button actions from the Devtools UI
