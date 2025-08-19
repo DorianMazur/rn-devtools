@@ -261,7 +261,7 @@ const InstanceCard: React.FC<InstanceCardProps> = ({
                 <div className="flex items-center gap-2 pt-0.5">
                   {!editing ? (
                     <>
-                      {r.value.type === "boolean" && (
+                      {r.value.type === "boolean" ? (
                         <button
                           onClick={() =>
                             mutate(inst.id, [
@@ -281,13 +281,14 @@ const InstanceCard: React.FC<InstanceCardProps> = ({
                         >
                           Toggle
                         </button>
+                      ) : (
+                        <button
+                          onClick={() => startEdit(inst.id, r.key)}
+                          className="text-xs px-2 py-1 rounded-md border border-[#2D2D2F] hover:bg-[#191a1d]"
+                        >
+                          Edit
+                        </button>
                       )}
-                      <button
-                        onClick={() => startEdit(inst.id, r.key)}
-                        className="text-xs px-2 py-1 rounded-md border border-[#2D2D2F] hover:bg-[#191a1d]"
-                      >
-                        Edit
-                      </button>
                       <button
                         onClick={() => deleteRow(inst.id, r.key)}
                         className="text-xs px-2 py-1 rounded-md border border-[#2D2D2F] hover:bg-[#191a1d]"
@@ -523,10 +524,7 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
       </div>
 
       {instList.length === 0 ? (
-        <div className="text-sm text-gray-400">
-          Waiting for instances… open the app in development with the hook
-          mounted.
-        </div>
+        <div className="text-sm text-gray-400">Waiting for instances…</div>
       ) : (
         instList.map((inst) => (
           <InstanceCard
