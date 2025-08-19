@@ -2791,7 +2791,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rn-devtools/plugin-sdk@workspace:*, @rn-devtools/plugin-sdk@workspace:packages/plugin-sdk":
+"@rn-devtools/plugin-sdk@npm:^1.0.2, @rn-devtools/plugin-sdk@workspace:*, @rn-devtools/plugin-sdk@workspace:packages/plugin-sdk":
   version: 0.0.0-use.local
   resolution: "@rn-devtools/plugin-sdk@workspace:packages/plugin-sdk"
   dependencies:
@@ -2802,8 +2802,6 @@ __metadata:
     socket.io-client: "npm:^4.8.1"
     tsup: "npm:^8.5.0"
     typescript: "npm:^5.8.3"
-  peerDependencies:
-    socket.io-client: 4
   languageName: unknown
   linkType: soft
 
@@ -2811,22 +2809,20 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rn-devtools/react-native-mmkv-plugin@workspace:packages/react-native-mmkv-plugin"
   dependencies:
-    "@rn-devtools/plugin-sdk": "workspace:*"
+    "@rn-devtools/plugin-sdk": "npm:^1.0.2"
     "@typescript-eslint/eslint-plugin": "npm:^8.20.0"
     "@typescript-eslint/parser": "npm:^8.20.0"
     eslint: "npm:^9.4.0"
     eslint-plugin-react: "npm:7.37.5"
     react: "npm:19.1.0"
-    react-dom: "npm:19.1.0"
-    react-native-mmkv: "patch:react-native-mmkv@npm%3A3.3.0#~/.yarn/patches/react-native-mmkv-npm-3.3.0-27a8e718b6.patch"
+    react-native-mmkv: "npm:^3.3.0"
     socket.io-client: "npm:^4.8.1"
     tsup: "npm:^8.5.0"
     typescript: "npm:^5.8.3"
   peerDependencies:
+    "@rn-devtools/plugin-sdk": 1
     react: ">=18"
-    react-dom: ">=18"
     react-native-mmkv: 3
-    socket.io-client: 4
   languageName: unknown
   linkType: soft
 
@@ -2836,20 +2832,18 @@ __metadata:
   dependencies:
     "@react-navigation/devtools": "npm:^7.0.38"
     "@react-navigation/native": "npm:^7.1.17"
-    "@rn-devtools/plugin-sdk": "workspace:*"
+    "@rn-devtools/plugin-sdk": "npm:^1.0.2"
     "@typescript-eslint/eslint-plugin": "npm:^8.20.0"
     "@typescript-eslint/parser": "npm:^8.20.0"
     eslint: "npm:^9.4.0"
     eslint-plugin-react: "npm:7.37.5"
     react: "npm:19.1.0"
-    react-dom: "npm:19.1.0"
     socket.io-client: "npm:^4.8.1"
     tsup: "npm:^8.5.0"
     typescript: "npm:^5.8.3"
   peerDependencies:
+    "@rn-devtools/plugin-sdk": 1
     react: ">=18"
-    react-dom: ">=18"
-    socket.io-client: 4
   languageName: unknown
   linkType: soft
 
@@ -2857,21 +2851,19 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rn-devtools/react-query-plugin@workspace:packages/react-query-plugin"
   dependencies:
-    "@rn-devtools/plugin-sdk": "workspace:*"
+    "@rn-devtools/plugin-sdk": "npm:^1.0.2"
     "@tanstack/react-query": "npm:^5.85.3"
     "@tanstack/react-query-devtools": "npm:^5.85.3"
     eslint: "npm:^9.4.0"
     eslint-config-prettier: "npm:^9.1.0"
     eslint-plugin-react: "npm:7.37.5"
     react: "npm:19.1.0"
-    react-dom: "npm:19.1.0"
     socket.io-client: "npm:^4.8.1"
     tsup: "npm:^8.5.0"
     typescript: "npm:^5.8.3"
   peerDependencies:
+    "@rn-devtools/plugin-sdk": 1
     react: ">=18"
-    react-dom: ">=18"
-    socket.io-client: 4
   languageName: unknown
   linkType: soft
 
@@ -9828,12 +9820,17 @@ __metadata:
   resolution: "rn-devtools@workspace:packages/rn-devtools"
   dependencies:
     "@tailwindcss/vite": "npm:^4.1.4"
+    eslint: "npm:^9.4.0"
+    eslint-config-prettier: "npm:^9.1.0"
+    eslint-plugin-react: "npm:7.37.5"
     open: "npm:^10.2.0"
     react: "npm:19.1.0"
     react-dom: "npm:19.1.0"
     socket.io: "npm:^4.7.2"
     socket.io-client: "npm:^4.8.1"
     tailwindcss: "npm:^4.1.4"
+    tsup: "npm:^8.5.0"
+    typescript: "npm:^5.8.3"
     vite: "npm:^6.3.3"
     vite-tsconfig-paths: "npm:^5.1.4"
   bin:

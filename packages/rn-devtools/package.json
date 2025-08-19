@@ -1,6 +1,19 @@
 {
   "name": "rn-devtools",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dorian Mazur",
+    "email": "mazur.dorian15@gmail.com"
+  },
+  "homepage": "https://github.com/DorianMazur/rn-devtools",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/DorianMazur/rn-devtools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DorianMazur/rn-devtools/issues"
+  },
+  "license": "MIT",
   "description": "React Native DevTools",
   "type": "module",
   "files": [
@@ -18,7 +31,8 @@
     "lint:eslint:fix": "eslint . --fix",
     "lint:tsc": "tsc --noEmit",
     "lint": "yarn lint:eslint && yarn lint:tsc",
-    "build": "tsup --config=./tsup.config.ts"
+    "build": "tsup",
+    "publish": "npm publish --access public"
   },
   "bin": "./bin/index.js",
   "dependencies": {
@@ -31,6 +45,13 @@
     "tailwindcss": "^4.1.4",
     "vite": "^6.3.3",
     "vite-tsconfig-paths": "^5.1.4"
+  },
+  "devDependencies": {
+    "eslint": "^9.4.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "7.37.5",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
   },
   "engines": {
     "node": ">=20"

@@ -1,8 +1,19 @@
 {
   "name": "@rn-devtools/react-native-mmkv-plugin",
-  "author": "Dorian Mazur",
+  "author": {
+    "name": "Dorian Mazur",
+    "email": "mazur.dorian15@gmail.com"
+  },
+  "homepage": "https://github.com/DorianMazur/rn-devtools",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/DorianMazur/rn-devtools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DorianMazur/rn-devtools/issues"
+  },
   "license": "MIT",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "React Native MMKV plugin for rn-devtools",
   "main": "dist/web.mjs",
   "types": "dist/web.d.mts",
@@ -29,13 +40,13 @@
     "lint:eslint:fix": "eslint . --fix",
     "lint:tsc": "tsc --noEmit",
     "lint": "yarn lint:eslint && yarn lint:tsc",
-    "build": "tsup src/web.tsx src/native.ts --format esm --dts --clean --external react --external react-dom --external socket.io-client"
+    "build": "tsup src/web.tsx src/native.ts --format esm --dts --clean --external react --external socket.io-client",
+    "publish": "npm publish --access public"
   },
   "dependencies": {
-    "@rn-devtools/plugin-sdk": "workspace:*",
+    "@rn-devtools/plugin-sdk": "^1.0.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "react-native-mmkv": "patch:react-native-mmkv@npm%3A3.3.0#~/.yarn/patches/react-native-mmkv-npm-3.3.0-27a8e718b6.patch",
+    "react-native-mmkv": "^3.3.0",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
@@ -47,9 +58,8 @@
     "typescript": "^5.8.3"
   },
   "peerDependencies": {
+    "@rn-devtools/plugin-sdk": "1",
     "react": ">=18",
-    "react-dom": ">=18",
-    "react-native-mmkv": "3",
-    "socket.io-client": "4"
+    "react-native-mmkv": "3"
   }
 }

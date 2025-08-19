@@ -25,5 +25,8 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.39.1"
   },
+  "resolutions": {
+    "react-native-mmkv": "patch:react-native-mmkv@npm%3A3.3.0#~/.yarn/patches/react-native-mmkv-npm-3.3.0-27a8e718b6.patch"
+  },
   "packageManager": "yarn@4.9.2"
 }
