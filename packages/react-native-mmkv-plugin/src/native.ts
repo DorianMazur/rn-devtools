@@ -68,7 +68,7 @@ function writeKey(mmkv: MMKV, key: string, v: WireValue) {
       break;
     case "buffer": {
       const u8 = new Uint8Array(v.valueBytes);
-      mmkv.set(key, u8);
+      mmkv.set(key, u8.buffer);
       break;
     }
     case "undefined":
