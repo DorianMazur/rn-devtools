@@ -7,13 +7,22 @@ import type {
   QueryState,
 } from "@tanstack/react-query";
 import { onlineManager } from "@tanstack/react-query";
-import { createNativePluginClient } from "@rn-devtools/plugin-sdk";
-import type { Socket } from "socket.io-client";
+import {
+  createNativePluginClient,
+  NativeHookProps,
+} from "@rn-devtools/plugin-sdk";
 
 const PLUGIN = "react-query";
 const EVT_STATE = "state";
 const EVT_REQ = "rq.request";
 const EVT_ACTION = "rq.action";
+
+type Props = NativeHookProps & {
+  /** Query client to monitor. */
+  queryClient: QueryClient;
+  /** Throttle duration in milliseconds. */
+  throttleMs?: number;
+};
 
 type WireAction =
   | "ACTION-REFETCH"
@@ -114,13 +123,8 @@ export function useReactQueryDevtools({
   queryClient,
   socket,
   deviceId,
-  throttleMs = 300,
-}: {
-  queryClient: QueryClient;
-  socket: Socket;
-  deviceId: string;
-  throttleMs?: number;
-}) {
+  throttleMs = 500,
+}: Props) {
   const clientRef = React.useRef(
     createNativePluginClient(PLUGIN, socket, deviceId)
   );

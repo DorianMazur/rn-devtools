@@ -1,23 +1,24 @@
 import * as React from "react";
 import type { Socket } from "socket.io-client";
-import { createNativePluginClient } from "@rn-devtools/plugin-sdk";
+import {
+  createNativePluginClient,
+  NativeHookProps,
+} from "@rn-devtools/plugin-sdk";
 import type { MMKV } from "react-native-mmkv";
 
-type Props = {
+type Props = NativeHookProps & {
   /** MMKV instances to monitor (pass the storages you care about). */
   storages: readonly MMKV[];
-  socket: Socket;
-  deviceId: string;
   /** Optional: customize how instanceIds are named on the wire (for the web UI). */
   getInstanceId?: (mmkv: MMKV, index: number) => string;
 };
 
 const PLUGIN = "mmkv";
-const EVT_CONFIG = "config"; // web → native: { instances: { id, watchAll?, keys? }[] }
-const EVT_SNAPSHOT = "snapshot"; // native → web: { instanceId, values }
-const EVT_CHANGE = "change"; // native → web: { instanceId, key, value }
-const EVT_MUTATE = "mutate"; // web → native: { instanceId, ops }
-const EVT_REQUEST_SNAPSHOT = "snapshot.request"; // web → native: { instanceId? }
+const EVT_CONFIG = "config";
+const EVT_SNAPSHOT = "snapshot";
+const EVT_CHANGE = "change";
+const EVT_MUTATE = "mutate";
+const EVT_REQUEST_SNAPSHOT = "snapshot.request";
 
 type WireValue =
   | { type: "string"; value: string }
@@ -80,9 +81,7 @@ function writeKey(mmkv: MMKV, key: string, v: WireValue) {
   }
 }
 
-/** Derive a readable/stable id for each instance. */
 function defaultGetId(mmkv: MMKV, index: number) {
-  // Try common fields/methods; fall back to index label.
   const any = mmkv as any;
   return String(any.id ?? any.getId?.() ?? `mmkv[${index}]`);
 }
@@ -98,7 +97,6 @@ export function useMMKVDevtools({
   );
   const client = clientRef.current;
 
-  // Build the (id, mmkv) pairs whenever storages changes.
   const pairs = React.useMemo(
     () => storages.map((mmkv, i) => ({ id: getInstanceId(mmkv, i), mmkv })),
     [storages, getInstanceId]
@@ -147,7 +145,6 @@ export function useMMKVDevtools({
       }
     );
 
-    // MMKV listeners
     const subs = pairs.map(({ id, mmkv }) =>
       mmkv.addOnValueChangedListener((changedKey) => {
         client.sendMessage(EVT_CHANGE, {

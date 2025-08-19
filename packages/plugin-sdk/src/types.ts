@@ -1,3 +1,5 @@
+import { Socket } from "socket.io-client";
+
 export type Device = {
   id: string;
   deviceId: string;
@@ -25,4 +27,9 @@ export type DevtoolsPlugin = {
   title: string;
   Icon: React.FC<{ className?: string }>;
   mount: React.ComponentType<PluginProps>;
+};
+
+export type NativeHookProps = {
+  socket: Socket;
+  deviceId: string;
 };

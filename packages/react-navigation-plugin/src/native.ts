@@ -4,13 +4,14 @@ import type {
   ParamListBase,
 } from "@react-navigation/native";
 import { useReduxDevToolsExtension } from "@react-navigation/devtools";
-import { createNativePluginClient } from "@rn-devtools/plugin-sdk";
-import type { Socket } from "socket.io-client";
+import {
+  createNativePluginClient,
+  NativeHookProps,
+} from "@rn-devtools/plugin-sdk";
 
-type Props = {
+type Props = NativeHookProps & {
+  /** Reference to the navigation container. */
   navigationRef: React.RefObject<NavigationContainerRef<ParamListBase>>;
-  socket: Socket;
-  deviceId: string;
 };
 
 const PLUGIN = "react-navigation";
