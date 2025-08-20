@@ -39,8 +39,7 @@
     "lint:eslint:fix": "eslint . --fix",
     "lint:tsc": "tsc --noEmit",
     "lint": "yarn lint:eslint && yarn lint:tsc",
-    "build": "tsup",
-    "publish": "npm publish --access public"
+    "build": "tsup"
   },
   "dependencies": {
     "socket.io-client": "^4.8.1"

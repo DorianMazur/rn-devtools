@@ -31,8 +31,7 @@
     "lint:eslint:fix": "eslint . --fix",
     "lint:tsc": "tsc --noEmit",
     "lint": "yarn lint:eslint && yarn lint:tsc",
-    "build": "tsup",
-    "publish": "npm publish --access public"
+    "build": "tsup"
   },
   "bin": "./bin/index.js",
   "dependencies": {
