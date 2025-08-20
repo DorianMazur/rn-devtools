@@ -13,7 +13,7 @@
     "url": "https://github.com/DorianMazur/rn-devtools/issues"
   },
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React Query tab for rn-devtools",
   "main": "dist/web.mjs",
   "types": "dist/web.d.mts",
@@ -40,25 +40,26 @@
     "lint:eslint:fix": "eslint . --fix",
     "lint:tsc": "tsc --noEmit",
     "lint": "yarn lint:eslint && yarn lint:tsc",
-    "build": "tsup src/web.tsx src/native.ts --format esm --dts --clean --external react --external socket.io-client",
+    "build": "tsup",
     "publish": "npm publish --access public"
   },
   "dependencies": {
-    "@rn-devtools/plugin-sdk": "^1.0.2",
-    "@tanstack/react-query": "^5.85.3",
     "@tanstack/react-query-devtools": "^5.85.3",
-    "react": "19.1.0",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
+    "@rn-devtools/plugin-sdk": "^1.0.2",
+    "@tanstack/react-query": "^5.85.3",
     "eslint": "^9.4.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "7.37.5",
+    "react": "19.1.0",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   },
   "peerDependencies": {
     "@rn-devtools/plugin-sdk": "1",
+    "@tanstack/react-query": "5",
     "react": ">=18"
   }
 }

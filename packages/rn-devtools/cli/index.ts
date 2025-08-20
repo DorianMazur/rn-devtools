@@ -30,6 +30,7 @@ async function startServer() {
       methods: ["GET", "POST"],
     },
     transports: ["websocket", "polling"],
+    maxHttpBufferSize: 50 * 1024 * 1024, // 50MB
     pingTimeout: 30000,
     pingInterval: 25000,
   });

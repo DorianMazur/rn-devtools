@@ -9,5 +9,5 @@
     "baseUrl": ".",
     "skipLibCheck": true
   },
-  "include": ["src"]
+  "include": ["src", "tsup.config.ts"]
 }

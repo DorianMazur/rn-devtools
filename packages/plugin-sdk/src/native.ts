@@ -70,6 +70,7 @@ export function useReactNativeDevtools(opts: RNDevtoolsOptions) {
   const sockRef = React.useRef<Socket | null>(null);
   if (!sockRef.current) {
     const query: Record<string, string> = {
+      role: "device",
       deviceName,
       deviceId,
       platform,
@@ -118,8 +119,5 @@ export function useReactNativeDevtools(opts: RNDevtoolsOptions) {
     };
   }, [socket, deviceId, autoConnect]);
 
-  const connect = React.useCallback(() => socket.connect(), [socket]);
-  const disconnect = React.useCallback(() => socket.disconnect(), [socket]);
-
-  return { socket, deviceId, isConnected, connect, disconnect };
+  return { socket, deviceId, isConnected };
 }

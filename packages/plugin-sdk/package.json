@@ -39,7 +39,7 @@
     "lint:eslint:fix": "eslint . --fix",
     "lint:tsc": "tsc --noEmit",
     "lint": "yarn lint:eslint && yarn lint:tsc",
-    "build": "tsup src/index.ts --format esm --dts --clean --external react --external socket.io-client",
+    "build": "tsup",
     "publish": "npm publish --access public"
   },
   "dependencies": {
@@ -50,7 +50,11 @@
     "@typescript-eslint/parser": "^8.20.0",
     "eslint": "^9.4.0",
     "eslint-plugin-react": "7.37.5",
+    "react": "19.1.0",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "react": ">=18"
   }
 }
