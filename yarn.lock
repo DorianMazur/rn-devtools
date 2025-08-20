@@ -3094,7 +3094,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rn-devtools/react-native-mmkv-plugin@npm:1.0.0, @rn-devtools/react-native-mmkv-plugin@workspace:packages/react-native-mmkv-plugin":
+"@rn-devtools/react-native-mmkv-plugin@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@rn-devtools/react-native-mmkv-plugin@npm:1.0.0"
+  dependencies:
+    "@rn-devtools/plugin-sdk": "npm:^1.0.2"
+    react: "npm:19.1.0"
+    react-native-mmkv: "npm:^3.3.0"
+    socket.io-client: "npm:^4.8.1"
+  peerDependencies:
+    react: ">=18"
+    react-native-mmkv: 3
+    socket.io-client: 4
+  checksum: 10c0/6fa8d0c2e07598c17ad303692f690c57f73b36a1a19b9f99dd059aadec143eedb00698c96a0469148490f9bda65af5c3dd14e3772218b1f2888f9715a03a4628
+  languageName: node
+  linkType: hard
+
+"@rn-devtools/react-native-mmkv-plugin@workspace:packages/react-native-mmkv-plugin":
   version: 0.0.0-use.local
   resolution: "@rn-devtools/react-native-mmkv-plugin@workspace:packages/react-native-mmkv-plugin"
   dependencies:
@@ -3115,7 +3131,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rn-devtools/react-navigation-plugin@npm:1.0.0, @rn-devtools/react-navigation-plugin@workspace:packages/react-navigation-plugin":
+"@rn-devtools/react-navigation-plugin@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@rn-devtools/react-navigation-plugin@npm:1.0.0"
+  dependencies:
+    "@react-navigation/native": "npm:^7.1.17"
+    "@rn-devtools/plugin-sdk": "npm:^1.0.2"
+    react: "npm:19.1.0"
+    socket.io-client: "npm:^4.8.1"
+  peerDependencies:
+    "@rn-devtools/plugin-sdk": 1
+    react: ">=18"
+  checksum: 10c0/7787191544908d2c2a9ba3ec7c4a0354a091bfdb9470f480a45409877f8543006555757581761d13359faeac9031dbc0c582300b2cd0a6803b6e57776a42f84e
+  languageName: node
+  linkType: hard
+
+"@rn-devtools/react-navigation-plugin@workspace:packages/react-navigation-plugin":
   version: 0.0.0-use.local
   resolution: "@rn-devtools/react-navigation-plugin@workspace:packages/react-navigation-plugin"
   dependencies:
