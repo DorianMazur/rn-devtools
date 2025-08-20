@@ -30,7 +30,8 @@ yarn add @rn-devtools/plugin-sdk
 - [@rn-devtools/react-navigation-plugin](https://github.com/DorianMazur/rn-devtools/tree/main/packages/react-navigation-plugin)
 - [@rn-devtools/react-native-mmkv-plugin](https://github.com/DorianMazur/rn-devtools/tree/main/packages/react-native-mmkv-plugin)
 
-1. Tell the web app which plugins to load
+
+2. Tell the web app which plugins to load
 
 Create rn-devtools.config.js in your RN app:
 
@@ -51,7 +52,7 @@ module.exports = {
 rn-devtools
 ```
 
-1. Wire the RN app (one hook, many plugins)
+4. Wire the RN app (one hook, many plugins)
 
 ```tsx
 import { useReactNativeDevtools } from "rn-devtools";
