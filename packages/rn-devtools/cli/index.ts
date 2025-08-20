@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { createServer } from "vite";
-import open from "open";
+import open, { apps } from "open";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Server as SocketIOServer } from "socket.io";
@@ -36,6 +36,27 @@ async function startServer() {
   });
 
   socketHandle({ io });
+
+  const url = "http://localhost:35515";
+
+  try {
+    await open(url, {
+      app: [
+        { name: apps.chrome, arguments: ["--new-window"] },
+        { name: apps.edge, arguments: ["--new-window"] },
+        { name: apps.firefox, arguments: ["-new-window"] },
+      ],
+      newInstance: process.platform === "darwin",
+    });
+  } catch {
+    try {
+      await open(url);
+    } catch {
+      console.error(
+        `[rn-devtools] Couldn't open a browser automatically. Please open: ${url}`,
+      );
+    }
+  }
 
   await open("http://localhost:35515", {
     newInstance: true,
