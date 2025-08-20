@@ -3094,23 +3094,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rn-devtools/react-native-mmkv-plugin@npm:1.0.0":
-  version: 1.0.0
-  resolution: "@rn-devtools/react-native-mmkv-plugin@npm:1.0.0"
-  dependencies:
-    "@rn-devtools/plugin-sdk": "npm:^1.0.2"
-    react: "npm:19.1.0"
-    react-native-mmkv: "npm:^3.3.0"
-    socket.io-client: "npm:^4.8.1"
-  peerDependencies:
-    react: ">=18"
-    react-native-mmkv: 3
-    socket.io-client: 4
-  checksum: 10c0/6fa8d0c2e07598c17ad303692f690c57f73b36a1a19b9f99dd059aadec143eedb00698c96a0469148490f9bda65af5c3dd14e3772218b1f2888f9715a03a4628
-  languageName: node
-  linkType: hard
-
-"@rn-devtools/react-native-mmkv-plugin@workspace:packages/react-native-mmkv-plugin":
+"@rn-devtools/react-native-mmkv-plugin@npm:^1.0.1, @rn-devtools/react-native-mmkv-plugin@workspace:packages/react-native-mmkv-plugin":
   version: 0.0.0-use.local
   resolution: "@rn-devtools/react-native-mmkv-plugin@workspace:packages/react-native-mmkv-plugin"
   dependencies:
@@ -3131,22 +3115,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rn-devtools/react-navigation-plugin@npm:1.0.0":
-  version: 1.0.0
-  resolution: "@rn-devtools/react-navigation-plugin@npm:1.0.0"
-  dependencies:
-    "@react-navigation/native": "npm:^7.1.17"
-    "@rn-devtools/plugin-sdk": "npm:^1.0.2"
-    react: "npm:19.1.0"
-    socket.io-client: "npm:^4.8.1"
-  peerDependencies:
-    "@rn-devtools/plugin-sdk": 1
-    react: ">=18"
-  checksum: 10c0/7787191544908d2c2a9ba3ec7c4a0354a091bfdb9470f480a45409877f8543006555757581761d13359faeac9031dbc0c582300b2cd0a6803b6e57776a42f84e
-  languageName: node
-  linkType: hard
-
-"@rn-devtools/react-navigation-plugin@workspace:packages/react-navigation-plugin":
+"@rn-devtools/react-navigation-plugin@npm:^1.0.2, @rn-devtools/react-navigation-plugin@workspace:packages/react-navigation-plugin":
   version: 0.0.0-use.local
   resolution: "@rn-devtools/react-navigation-plugin@workspace:packages/react-navigation-plugin"
   dependencies:
@@ -3168,24 +3137,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rn-devtools/react-query-plugin@npm:1.0.1":
-  version: 1.0.1
-  resolution: "@rn-devtools/react-query-plugin@npm:1.0.1"
-  dependencies:
-    "@rn-devtools/plugin-sdk": "npm:^1.0.2"
-    "@tanstack/react-query": "npm:^5.85.3"
-    "@tanstack/react-query-devtools": "npm:^5.85.3"
-    react: "npm:19.1.0"
-    socket.io-client: "npm:^4.8.1"
-  peerDependencies:
-    "@rn-devtools/plugin-sdk": 1
-    "@tanstack/react-query": 5
-    react: ">=18"
-  checksum: 10c0/65e734dc40eba92bb6e643d31cabe94d7e8a700a68016bdd2adcb943d97be311dcf199c47ee59a8156bc5e6b3005787db3f5d95b34348bbb2f8da8485ac87733
-  languageName: node
-  linkType: hard
-
-"@rn-devtools/react-query-plugin@workspace:packages/react-query-plugin":
+"@rn-devtools/react-query-plugin@npm:^1.0.4, @rn-devtools/react-query-plugin@workspace:packages/react-query-plugin":
   version: 0.0.0-use.local
   resolution: "@rn-devtools/react-query-plugin@workspace:packages/react-query-plugin"
   dependencies:
@@ -4211,9 +4163,9 @@ __metadata:
     "@react-navigation/native": "npm:^7.1.17"
     "@react-navigation/native-stack": "npm:^7.3.25"
     "@rn-devtools/plugin-sdk": "npm:1.0.2"
-    "@rn-devtools/react-native-mmkv-plugin": "npm:1.0.0"
-    "@rn-devtools/react-navigation-plugin": "npm:1.0.0"
-    "@rn-devtools/react-query-plugin": "npm:1.0.1"
+    "@rn-devtools/react-native-mmkv-plugin": "npm:^1.0.1"
+    "@rn-devtools/react-navigation-plugin": "npm:^1.0.2"
+    "@rn-devtools/react-query-plugin": "npm:^1.0.4"
     "@rnx-kit/metro-config": "npm:^2.1.0"
     "@tanstack/react-query": "npm:^5.85.3"
     "@types/jest": "npm:^29.5.13"
@@ -4228,7 +4180,7 @@ __metadata:
     react-native-test-app: "npm:^4.4.6"
     react-query-external-sync: "npm:^2.2.3"
     react-test-renderer: "npm:19.1.0"
-    rn-devtools: "npm:1.0.0"
+    rn-devtools: "npm:^1.0.2"
     socket.io-client: "npm:^4.8.1"
   languageName: unknown
   linkType: soft
@@ -10326,26 +10278,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rn-devtools@npm:1.0.0":
-  version: 1.0.0
-  resolution: "rn-devtools@npm:1.0.0"
-  dependencies:
-    "@tailwindcss/vite": "npm:^4.1.4"
-    open: "npm:^10.2.0"
-    react: "npm:19.1.0"
-    react-dom: "npm:19.1.0"
-    socket.io: "npm:^4.7.2"
-    socket.io-client: "npm:^4.8.1"
-    tailwindcss: "npm:^4.1.4"
-    vite: "npm:^6.3.3"
-    vite-tsconfig-paths: "npm:^5.1.4"
-  bin:
-    rn-devtools: bin/index.js
-  checksum: 10c0/c4bf790affe2a366e6685070c412adf9c68956d78296c1352719cfc6a250d5896b494033a04a6a945efb2395018715f20e2e303ea33c0f0b0249fad21679f4a1
-  languageName: node
-  linkType: hard
-
-"rn-devtools@workspace:packages/rn-devtools":
+"rn-devtools@npm:^1.0.2, rn-devtools@workspace:packages/rn-devtools":
   version: 0.0.0-use.local
   resolution: "rn-devtools@workspace:packages/rn-devtools"
   dependencies:

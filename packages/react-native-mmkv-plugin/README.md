@@ -5,9 +5,9 @@ A React Native MMKV tab for rn-devtools, allowing developers to view and interac
 ## Installation
 
 ```bash
-npm i -D @rn-devtools/react-native-mmkv-plugin
+npm i @rn-devtools/react-native-mmkv-plugin
 # or
-yarn add -D @rn-devtools/react-native-mmkv-plugin
+yarn add @rn-devtools/react-native-mmkv-plugin
 ```
 ## Usage
 1) Native (in your app)

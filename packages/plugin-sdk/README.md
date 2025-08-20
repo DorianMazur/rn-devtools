@@ -8,10 +8,10 @@ Tools and utilities for building **rn-devtools** plugins on both the **dashboard
 
 ```bash
 # with yarn
-yarn add -D @rn-devtools/plugin-sdk
+yarn add @rn-devtools/plugin-sdk
 
 # or with npm
-npm i -D @rn-devtools/plugin-sdk
+npm i @rn-devtools/plugin-sdk
 ```
 
 > **Peer dependency**: `socket.io-client` v4 is expected in apps that use this SDK.
