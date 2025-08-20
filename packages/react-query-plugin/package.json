@@ -13,7 +13,7 @@
     "url": "https://github.com/DorianMazur/rn-devtools/issues"
   },
   "license": "MIT",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "React Query tab for rn-devtools",
   "main": "dist/web.mjs",
   "types": "dist/web.d.mts",
