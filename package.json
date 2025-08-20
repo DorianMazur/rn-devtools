@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "lint:all": "yarn workspaces foreach -Apt run lint",
     "build:all": "yarn workspaces foreach -At run build",
-    "changeset:release": "yarn build:all && changeset publish"
+    "changeset:release": "yarn build:all && changeset publish",
+    "changeset:version": "changeset version",
+    "changeset": "changeset"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",

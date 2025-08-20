@@ -13,7 +13,7 @@
     "url": "https://github.com/DorianMazur/rn-devtools/issues"
   },
   "license": "MIT",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "React Query tab for rn-devtools",
   "main": "dist/web.mjs",
   "types": "dist/web.d.mts",
@@ -43,12 +43,12 @@
     "build": "tsup"
   },
   "dependencies": {
-    "@tanstack/react-query-devtools": "^5.85.3",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@rn-devtools/plugin-sdk": "^1.0.2",
     "@tanstack/react-query": "^5.85.3",
+    "@tanstack/react-query-devtools": "^5.85.3",
     "eslint": "^9.4.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "7.37.5",
@@ -59,6 +59,7 @@
   "peerDependencies": {
     "@rn-devtools/plugin-sdk": "1",
     "@tanstack/react-query": "5",
+    "@tanstack/react-query-devtools": "5",
     "react": ">=18"
   }
 }

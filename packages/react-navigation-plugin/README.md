@@ -5,9 +5,9 @@ A React Navigation tab for rn-devtools. It shows the focused navigator/stack, le
 ## Installation
 
 ```bash
-npm i -D @rn-devtools/react-navigation-plugin
+npm i @rn-devtools/react-navigation-plugin
 # or
-yarn add -D @rn-devtools/react-navigation-plugin
+yarn add @rn-devtools/react-navigation-plugin
 ```
 ## Usage
 1) Native (in your app)

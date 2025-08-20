@@ -37,6 +37,8 @@ jobs:
         uses: changesets/action@v1
         with:
           publish: yarn run changeset:release
+          commit: "chore(release): version packages"
+          title: "chore(release): version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

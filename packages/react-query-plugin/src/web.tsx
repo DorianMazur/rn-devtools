@@ -311,7 +311,7 @@ const Tab: React.FC<PluginProps> = ({ targetDevice }) => {
           <div className="text-sm text-gray-400">Waiting for device…</div>
         ) : (
           <div className="rounded-lg border border-white/10 overflow-hidden">
-            <ReactQueryDevtoolsPanel />
+            <ReactQueryDevtoolsPanel client={client} />
           </div>
         )}
       </QueryClientProvider>

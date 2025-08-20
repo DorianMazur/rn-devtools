@@ -4,11 +4,16 @@ A React Query tab for rn-devtools. Mirrors your app’s TanStack Query state in 
 
 ## Installation
 
+To install the plugin, ensure the version of `@tanstack/react-query-devtools` matches your `@tanstack/react-query` version.
+
 ```bash
-npm i -D @rn-devtools/react-query-plugin
+npm install @rn-devtools/react-query-plugin 
+npm install --save-dev @tanstack/react-query-devtools
 # or
-yarn add -D @rn-devtools/react-query-plugin
+yarn add @rn-devtools/react-query-plugin 
+yarn add -D @tanstack/react-query-devtools
 ```
+
 ## Usage
 1) Native (in your app)
 
