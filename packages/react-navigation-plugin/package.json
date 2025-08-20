@@ -43,8 +43,8 @@
     "build": "tsup"
   },
   "dependencies": {
-    "socket.io-client": "^4.8.1",
-    "@react-navigation/devtools": "^7.0.38"
+    "@react-navigation/devtools": "^7.0.38",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@react-navigation/native": "^7.1.17",
@@ -52,8 +52,8 @@
     "@typescript-eslint/eslint-plugin": "^8.20.0",
     "@typescript-eslint/parser": "^8.20.0",
     "eslint": "^9.4.0",
-    "react": "19.1.0",
     "eslint-plugin-react": "7.37.5",
+    "react": "19.1.0",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   },

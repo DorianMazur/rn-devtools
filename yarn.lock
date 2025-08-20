@@ -3202,6 +3202,7 @@ __metadata:
   peerDependencies:
     "@rn-devtools/plugin-sdk": 1
     "@tanstack/react-query": 5
+    "@tanstack/react-query-devtools": 5
     react: ">=18"
   languageName: unknown
   linkType: soft
