@@ -9,9 +9,11 @@
   "scripts": {
     "lint": "eslint .",
     "lint:all": "yarn workspaces foreach -Apt run lint",
-    "build:all": "yarn workspaces foreach -At run build"
+    "build:all": "yarn workspaces foreach -At run build",
+    "release": "yarn build:all && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.1",
     "@eslint/js": "^9.33.0",
     "@types/node": "^20",
     "@types/react": "^19.1.2",
